@@ -1,0 +1,10 @@
+[run] no on lbm: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/lbm_no.json
+[done] no on lbm in 247s
+[run] ip_stride on lbm: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/lbm_ip_stride.json
+[done] ip_stride on lbm in 182s
+[run] stream on lbm: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/lbm_stream.json
+[done] stream on lbm in 164s
+[run] sms on lbm: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/lbm_sms.json
+[done] sms on lbm in 172s
+[run] sandbox on lbm: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/lbm_sandbox.json
+[done] sandbox on lbm in 182s

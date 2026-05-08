@@ -84,5 +84,8 @@ W3 的具体改动（占位）：
 - [x] 1 条 trace、no-prefetch baseline IPC=0.124
 - [x] 1 条 trace、ip_stride IPC=0.138（+11.6%）
 - [x] 验证：通过 JSON 配置切换 prefetcher 可以重新生成 binary 并跑出不同 IPC
+- [x] 下载剩余 3 条 trace（W2 时同步完成；mcf 159M / lbm 759M / omnetpp 766M / bwaves 34M）
 - [ ] 学校 GPU 信息确认（待用户答复）
-- [ ] 下载剩余 3 条 trace（待用户确认是否现在就下）
+
+→ W2 转入 [01-w2-prefetchers.md](01-w2-prefetchers.md)：移植 Stream / SMS / Sandbox 三个
+prefetcher、跑通 4 件套 baseline。

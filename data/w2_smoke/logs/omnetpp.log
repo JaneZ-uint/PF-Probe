@@ -1,0 +1,10 @@
+[run] no on omnetpp: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/omnetpp_no.json
+[done] no on omnetpp in 236s
+[run] ip_stride on omnetpp: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/omnetpp_ip_stride.json
+[done] ip_stride on omnetpp in 173s
+[run] stream on omnetpp: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/omnetpp_stream.json
+[done] stream on omnetpp in 164s
+[run] sms on omnetpp: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/omnetpp_sms.json
+[done] sms on omnetpp in 171s
+[run] sandbox on omnetpp: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/omnetpp_sandbox.json
+[done] sandbox on omnetpp in 192s

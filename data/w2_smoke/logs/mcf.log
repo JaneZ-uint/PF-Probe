@@ -1,0 +1,10 @@
+[run] no on mcf: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/mcf_no.json
+[done] no on mcf in 480s
+[run] ip_stride on mcf: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/mcf_ip_stride.json
+[done] ip_stride on mcf in 433s
+[run] stream on mcf: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/mcf_stream.json
+[done] stream on mcf in 227s
+[run] sms on mcf: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/mcf_sms.json
+[done] sms on mcf in 196s
+[run] sandbox on mcf: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/mcf_sandbox.json
+[done] sandbox on mcf in 226s

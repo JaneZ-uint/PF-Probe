@@ -1,0 +1,10 @@
+[run] no on bwaves: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/bwaves_no.json
+[done] no on bwaves in 58s
+[run] ip_stride on bwaves: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/bwaves_ip_stride.json
+[done] ip_stride on bwaves in 48s
+[run] stream on bwaves: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/bwaves_stream.json
+[done] stream on bwaves in 61s
+[run] sms on bwaves: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/bwaves_sms.json
+[done] sms on bwaves in 43s
+[run] sandbox on bwaves: 1M warmup + 5M sim → /home/zhuyihan/code/PF-LLM/data/w2_smoke/bwaves_sandbox.json
+[done] sandbox on bwaves in 34s
