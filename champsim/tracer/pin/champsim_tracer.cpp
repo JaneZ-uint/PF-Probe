@@ -79,10 +79,26 @@ void ResetCurrentInstruction(VOID* ip)
   curr_instr.ip = (unsigned long long int)ip;
 }
 
-BOOL ShouldWrite()
+// MaybeWriteCurrentInstruction: increment the global instr counter and emit
+// the trace record only if we're inside [skip+1, skip+trace] range.
+//
+// We deliberately DO NOT use Pin's IF/THEN (INS_InsertIfCall + InsertThenCall)
+// here even though that would let Pin inline the predicate: Pin's IF callback
+// must be a side-effect-free predicate, and the natural place to bump
+// instrCount is inside the predicate. Tested with Pin 3.30 + Linux 6.6,
+// IF/THEN under-throttles in hot loops and emits ~50× more records than
+// requested. Calling MaybeWrite unconditionally is slightly slower per insn
+// but exact.
+void MaybeWriteCurrentInstruction()
 {
   ++instrCount;
-  return (instrCount > KnobSkipInstructions.Value()) && (instrCount <= (KnobTraceInstructions.Value() + KnobSkipInstructions.Value()));
+  if (instrCount <= KnobSkipInstructions.Value())
+    return;
+  if (instrCount > KnobSkipInstructions.Value() + KnobTraceInstructions.Value())
+    return;
+  typename decltype(outfile)::char_type buf[sizeof(trace_instr_format_t)];
+  std::memcpy(buf, &curr_instr, sizeof(trace_instr_format_t));
+  outfile.write(buf, sizeof(trace_instr_format_t));
 }
 
 void WriteCurrentInstruction()
@@ -150,8 +166,7 @@ VOID Instruction(INS ins, VOID* v)
   }
 
   // finalize each instruction with this function
-  INS_InsertIfCall(ins, IPOINT_BEFORE, (AFUNPTR)ShouldWrite, IARG_END);
-  INS_InsertThenCall(ins, IPOINT_BEFORE, (AFUNPTR)WriteCurrentInstruction, IARG_END);
+  INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)MaybeWriteCurrentInstruction, IARG_END);
 }
 
 /*!

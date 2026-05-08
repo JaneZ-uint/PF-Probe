@@ -1,1 +1,9 @@
 traces/*.xz
+
+# Pin SDK (155 MB, vendored, redownload via plan.md)
+vendor/pin
+vendor/pin-3.30-*/
+vendor/pin-3.30.tar.gz
+
+# Pin tracer build artifacts
+champsim/tracer/pin/obj-intel64/
