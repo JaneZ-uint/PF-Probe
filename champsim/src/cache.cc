@@ -235,8 +235,15 @@ bool CACHE::handle_fill(const mshr_type& fill_mshr)
   }
 
   // COLLECT STATS
-  if (fill_mshr.type != access_type::PREFETCH)
-    sim_stats.total_miss_latency_cycles += (current_time - (fill_mshr.time_enqueued + clock_period)) / clock_period;
+  if (fill_mshr.type != access_type::PREFETCH) {
+    auto latency_cycles = (current_time - (fill_mshr.time_enqueued + clock_period)) / clock_period;
+    sim_stats.total_miss_latency_cycles += latency_cycles;
+
+    // PF-LLM W3b: per-PC AMAT — accumulate latency keyed by the demand IP.
+    auto& slot = sim_stats.per_pc_load_latency[fill_mshr.ip.to<uint64_t>()];
+    slot.first += static_cast<uint64_t>(latency_cycles);
+    slot.second += 1;
+  }
   sim_stats.mshr_return.increment(std::pair{fill_mshr.type, fill_mshr.cpu});
 
   response_type response{fill_mshr.address, fill_mshr.v_address, fill_mshr.data_promise->data, metadata_thru, fill_mshr.instr_depend_on_me};
@@ -877,6 +884,9 @@ void CACHE::end_phase(unsigned finished_cpu)
   roi_stats.pf_useful = sim_stats.pf_useful;
   roi_stats.pf_useless = sim_stats.pf_useless;
   roi_stats.pf_fill = sim_stats.pf_fill;
+
+  // PF-LLM W3b: snapshot the per-PC AMAT table into roi_stats too.
+  roi_stats.per_pc_load_latency = sim_stats.per_pc_load_latency;
 
   for (auto* ul : upper_levels) {
     ul->roi_stats.RQ_ACCESS = ul->sim_stats.RQ_ACCESS;

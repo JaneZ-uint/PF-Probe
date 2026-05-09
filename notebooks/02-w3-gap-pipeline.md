@@ -149,3 +149,511 @@ W3 Day 1 完成，可以去睡觉。
 - **trace 体量**：1 M 指令 = 62 MB raw / 89 KB xz。GAP kernel 跑到 100M 指令
   规模就是 6 GB raw / ~10 MB xz；24 个 trace 总 raw 量 ~150 GB——
   **千万记得边 trace 边 xz**，不要在磁盘上留 raw（W3a 写一个 `pin … | xz > out.xz` 的脚本）
+
+---
+
+# W3a — GAPBS 编译 + 单 kernel 端到端跑通
+
+> 起始：2026/05/09 下午
+> 范围：W3 Day 1 之后的第二步——把 GAP kernel 喂进 W2 的 simulator 跑通
+
+## 1. GAPBS 编译
+
+```bash
+git clone --depth 1 https://github.com/sbeamer/gapbs.git vendor/gapbs
+cd vendor/gapbs
+SERIAL=1 CXX_FLAGS="-std=c++11 -O3 -g -Wall" make -j8
+```
+
+产物：7 个 kernel + converter，在 `vendor/gapbs/` 下：
+
+| kernel | 大小 | 算法 |
+|---|---|---|
+| `bc` | 1.2 MB | Betweenness Centrality |
+| `bfs` | 920 KB | Breadth-First Search |
+| `cc` | 1.1 MB | Connected Components |
+| `pr` | 995 KB | PageRank |
+| `sssp` | 1.1 MB | Single-Source Shortest Path |
+| `tc` | 948 KB | Triangle Count |
+| `converter` | 955 KB | 输入图格式转换工具 |
+
+**关键 flag**：
+- `SERIAL=1` 关掉 OpenMP——multi-thread Pin tracing 会有顺序问题，单线程干净
+- `-g` 加 debug symbol 不影响 codegen，方便 W3a 步骤 4 的 objdump
+- `-O3` 与 PF-LLM 论文对齐
+- 无视若干 `#pragma omp` 警告（SERIAL 模式下 -fopenmp 没加，pragma 被忽略）
+
+## 2. 第一个 trace：BFS on Kron-17
+
+### 命令
+
+```bash
+mkdir -p traces/gap
+vendor/pin/pin -t champsim/tracer/pin/obj-intel64/champsim_tracer.so \
+    -o traces/gap/bfs_kron17.trace \
+    -t 30000000 \
+    -- vendor/gapbs/bfs -g 17 -n 1
+xz -T 4 traces/gap/bfs_kron17.trace
+```
+
+参数说明：
+- `bfs -g 17 -n 1`：Kron 2^17 = 131K vertices，~1.86M edges，degree=14；只跑 1 个 trial
+- `-t 30000000`：cap 在 30M 指令（足够覆盖整个 BFS 的算法部分）
+- 不加 `-s`（skip）：本次烟测不区分 graph 生成阶段 vs BFS 阶段
+
+### 结果
+
+| 维度 | 值 |
+|---|---|
+| Native runtime | 0.30 s |
+| Pin trace runtime | 61 s（200× slowdown，正常 Pin overhead） |
+| Trace raw 体积 | 1.8 GB（28M 条 × 64 B/条；cap 30M，BFS 提前结束） |
+| Trace xz 体积 | 2.8 MB（**650× 压缩比**） |
+| xz 时间 | 3m41s 用 4 线程 |
+
+### 一个观察（影响后续 W3 数据集设计）
+
+GAP 的 "Generate Time" 在 native 时只有 0.145 s，但在 Pin 下变成 44 s——
+说明 **trace 的 90% 都在图生成阶段**（顺序数组填充），真正的 BFS 算法只有
+~3M 条指令。
+
+正式 W3b 跑数据集时一定要用 Pin 的 `-s skip` 跳过 graph gen，或者预先把
+图生成成文件后用 `-f file` 读入。否则我们标 label 的 PC 大部分都是
+"new int[N]; for(...)"  式的内存填充而不是真正的 graph 算法热点。
+
+## 3. 喂 W2 的 5 个 ChampSim binary
+
+```bash
+for p in no ip_stride stream sms sandbox; do
+  ./champsim/bin/champsim_$p \
+      --warmup-instructions 1000000 \
+      --simulation-instructions 20000000 \
+      --json /tmp/gap_$p.json traces/gap/bfs_kron17.trace.xz
+done
+```
+
+每个 ~1.5 分钟 wall。**5 个全部跑通，0 失败**。
+
+### IPC + 缓存层数据
+
+| prefetcher | IPC | Δ vs no | L1D miss | L2C miss | pf_issued | useful | useless |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| no | 2.4712 | baseline | 13627 | 4181 | - | - | - |
+| ip_stride | 2.5020 | +1.2% | 13208 | 3525 | 2481 | 938 | 91 |
+| stream | 2.5562 | +3.4% | 12935 | 2390 | 11100 | 2206 | 1253 |
+| sms | 2.5072 | +1.5% | 13580 | 3674 | 3676 | 608 | 797 |
+| sandbox | **2.6051** | **+5.4%** | 12759 | **1386** | 69437 | 3471 | 4689 |
+
+**观察**：
+- IPC=2.47 baseline 比 SPEC mcf（0.12）高一个数量级——graph gen 阶段的顺序内存填充缓存友好，反映了"trace 头 90% 不是真正 BFS"的事实
+- Sandbox 把 L2C miss 从 4181 砍到 1386（−67%）——说明 graph gen 阶段的访问模式有清晰的 stride，Sandbox 的 offset evaluation 能很快锁定
+- Stream 的 prefetch 准确率 20%（2206/11100），明显高于 Sandbox 的 5%（3471/69437），但绝对 useful 数 Sandbox 多——Sandbox 用"高发射量+低准确率"换 IPC，Stream 是"低发射量+较高准确率"
+- 整个 baseline 跨 prefetcher 的 IPC 范围 2.47-2.61，diversity 够，可以驱动 PF-LLM label 的 (PF Sel, PF Degree, Filter) 决策
+
+### 端到端 wall clock 估算
+
+| 阶段 | 单次成本 |
+|---|---|
+| Pin tracing | ~60 s（Kron-17 × 30M cap）|
+| xz 压缩 | ~3 min（4 线程） |
+| ChampSim 单跑（20M sim） | 1.5 min |
+
+W3b full grid 估算：6 kernel × 4 input = 24 trace × (Pin 60s + xz 3min) = ~2 小时 trace 生成；24 trace × 4 prefetcher × 3 degree = 288 ChampSim sim × 1.5 min = 7 小时（4-parallel ~2 小时）。**全 W3 数据生成预计 1 个工作日 wall clock**，可以接受。
+
+## 4. W3a 完成度
+
+- [x] GAPBS clone + 7 kernel 编译（serial + debug symbols）
+- [x] Pin tracer 在 GAP binary 上跑通，trace cap 精确生效
+- [x] xz 压缩验证（650× 压缩比，磁盘问题不大）
+- [x] 5 个 W2 ChampSim binary 全部能消化 GAP trace
+- [x] Prefetcher diversity 验证（IPC 跨 2.47-2.61，cache miss 跨 1386-4181）
+- [ ] objdump + Python 抽 ±128 行汇编（**下一次做**——W3 后续的步骤 4）
+
+W3a 关键证据齐了：**GAP 路线在工程上是通的**。下次进 W3b，加 ChampSim
+per-PC AMAT 仪器化 + 写 objdump → assembly context 抽取脚本 + 跑数据生成 grid。
+
+## 工程产出（本节追加）
+
+| 路径 | 类型 | 备注 |
+|---|---|---|
+| `vendor/gapbs/` | 新增（git clone） | GAPBS 源码 + 7 个编译好的 kernel |
+| `traces/gap/bfs_kron17.trace.xz` | 新增 | 第一条 GAP trace（2.8MB），smoke 用 |
+| `notebooks/02-w3-gap-pipeline.md` | 修改 | 追加 W3a 部分 |
+
+---
+
+# W3b 进行中 — Step 1: ChampSim per-PC AMAT 仪器化
+
+> 起始：2026/05/09 下午（W3a 之后）
+> 范围：本步骤只做 cache.cc 的改动 + JSON 输出验证；trace 生成 + objdump + 全 grid 留下次
+
+## 仪器化设计
+
+PF-LLM 论文的 label 决策：对每个 (load PC, prefetcher, degree) 组合算
+出 AMAT，哪个最低就标哪个为 label。**关键依赖**：ChampSim 要能输出
+**per-PC** 的 average miss latency 而不是只有 cache 总体的 miss latency
+聚合数。
+
+### Hook 点
+
+ChampSim 的 `mshr_type` 已经天然带有 `champsim::address ip` 和
+`champsim::chrono::clock::time_point time_enqueued`（`cache.h:88-113`）——
+PC 和入队时间一直跟到 `handle_fill`。`cache.cc:238-239` 已经有现成的全局
+miss latency 累加：
+
+```cpp
+if (fill_mshr.type != access_type::PREFETCH)
+    sim_stats.total_miss_latency_cycles += (current_time - (fill_mshr.time_enqueued + clock_period)) / clock_period;
+```
+
+→ 只需要在同一处再加一个 per-PC 累加表。
+
+### 数据结构
+
+`cache_stats.h` 加：
+
+```cpp
+std::unordered_map<uint64_t, std::pair<uint64_t, uint64_t>> per_pc_load_latency{};
+// key = demand IP (uint64_t), value = (sum_cycles, count)
+// AMAT for a PC = sum / count
+```
+
+每个 cache 实例（L1I / L1D / L2C / LLC / TLB 等）都有一个独立的表。
+后续 label 决策只用 L1D 的（program 感知的实际 load latency）。
+
+### 改动文件
+
+| 文件 | 改动 | 行数 |
+|---|---|---|
+| `champsim/inc/cache_stats.h` | 加 `<unordered_map>` include + 新字段 | +5 |
+| `champsim/src/cache_stats.cc` | `operator-` 扩展（虽然 ChampSim 内部不用） | +6 |
+| `champsim/src/cache.cc` (handle_fill) | 在现有 latency 累加旁加 per-PC 累加 | +5 |
+| `champsim/src/cache.cc` (end_phase) | 在 sim→roi 字段拷贝里加新字段 | +3 |
+| `champsim/src/json_printer.cc` | 在 cache stats JSON 里 emit per-PC 表 | +13 |
+
+### 一个踩到的坑
+
+第一次 build 完跑 GAP trace，在 `roi[cpu0_L1D]` 里**找不到**
+`per_pc_load_latency` 字段，但 `sim[cpu0_L1D]` 里有。
+
+ChampSim 的 ROI/sim 模型不是用 `operator-`(虽然有定义但好像没用上),
+而是 `end_phase()` 里**逐字段**把 `sim_stats.<field>` 拷贝到 `roi_stats.<field>`。
+我的新字段没写在拷贝列表里→ roi_stats 永远是空 map → JSON 里 emit 检查 `!empty()`
+→ 跳过。
+
+修复：在 `end_phase()` 加一行
+```cpp
+roi_stats.per_pc_load_latency = sim_stats.per_pc_load_latency;
+```
+
+教训：ChampSim 引入新的 cache_stats 字段时，要同步改两个地方——
+`operator-` (代码库未必用上) **以及** `CACHE::end_phase()` (实际驱动 ROI 数据的)。
+
+## 验证
+
+### 单跑 champsim_no on bfs_kron17（5M sim）
+
+```bash
+./champsim/bin/champsim_no \
+    --warmup-instructions 1000000 \
+    --simulation-instructions 5000000 \
+    --json /tmp/amat_test.json traces/gap/bfs_kron17.trace.xz
+```
+
+`roi.cpu0_L1D.per_pc_load_latency` 包含 **698 个独立 PC**，AMAT 范围 10-200+ cycles。
+JSON 大小 195 KB（含全 cache 层级的 per-PC 表）。
+
+Top counts：
+
+| PC | sum_cyc | count | AMAT |
+|---|---:|---:|---:|
+| 0x7177b209a87c | 13637 | 750 | 18.2 |
+| 0x601b395854d8 | 128370 | 732 | **175.4** |
+| 0x7177b209b141 | 118865 | 728 | 163.3 |
+| 0x7177b209a826 | 5256 | 442 | 11.9 |
+
+`0x7177b...` 高地址区域是 libc/动态链接器代码；`0x601b...` 是 GAP binary
+本身的 `.text` 段；`0x0` 表示 page walk 触发的 fill（无 demand IP）。
+
+### 单跑 champsim_stream，对比 per-PC AMAT 变化
+
+```python
+# 共 662 个 PC 在两次跑里都 ≥ 50 次 fill，可以可靠对比
+```
+
+| PC | no.AMAT | stream.AMAT | delta |
+|---|---:|---:|---:|
+| 0x7177b209f5f0 | 219.1 | **31.7** | **−187.4** |
+| 0x7177b209f9a0 | 191.5 | 15.3 | −176.1 |
+| 0x7177b209f9bc | 191.0 | 22.7 | −168.3 |
+| 0x7177b209f5d0 | 202.5 | 64.2 | −138.3 |
+| 0x7177b209f5fd | 191.3 | 65.0 | −126.2 |
+| 0x7177b209b120 | 156.9 | 64.3 | −92.7 |
+| ... | ... | ... | ... |
+| 0x7177b209a826 | 11.9 | 11.1 | −0.8 |
+| **0x601b395854d8** | **175.4** | **176.8** | **+1.4** |
+| 0x0 | 203.4 | 211.3 | +7.9 |
+
+**这正是我们要的 label 信号**：
+- 大部分 PC 在 Stream 下 AMAT 降 50-200 cycles → 这些 PC 的 label 应该是 `(PF Sel=Stream, ...)`，
+- `0x601b395854d8`（BFS 的图边访问 pointer-chase 热点）AMAT 几乎不变 → label 应该是 `Filter`（不预取）。
+- 后续 W3b 跑全 grid 时，对每个 PC 比较 4 个 prefetcher × 3 degree 的 12 个 AMAT 值，最低值对应的 (prefetcher, degree) 就是 label。
+
+### JSON 体积评估
+
+| 跑 | 5M sim, baseline 195 KB |
+|---|---|
+| 50M sim 估计 | ~1-2 MB（PC count 增长不到线性，因为 working set 收敛） |
+| 全 W3b grid: 288 sim × 1.5 MB | ~430 MB 总磁盘 |
+
+完全可控。
+
+## W3b Step 1 完成状态
+
+- [x] cache_stats.h 加 per_pc_load_latency 字段
+- [x] cache_stats.cc operator- 扩展
+- [x] cache.cc handle_fill 加 per-PC 累加
+- [x] cache.cc end_phase 加 sim→roi 字段拷贝
+- [x] json_printer.cc 加 per-PC 表 emit
+- [x] 5 个 ChampSim binary 全部重建并验证
+- [x] 在 GAP bfs_kron17 trace 上看到合理 per-PC AMAT 数据
+- [x] no vs stream 对比验证仪器化能区分"prefetcher 是否对该 PC 有用"
+
+## 下一步（W3b Step 2-5，下次接着做）
+
+1. **Trace 生成 grid**：解决 graph 生成阶段污染问题——用 Pin `-s` skip 或预生成图文件后 `-f` 读入；产出全 6 kernel × 4 input 的 trace 集（24 个）
+2. **Degree 参数化**：build_prefetcher.sh 加 `<degree>` 参数（per-binary `-D` 烤入），产出 12 个新 binary
+3. **Full grid run**：no + 4 prefetcher × 3 degree = 13 配置 × 24 trace = ~312 ChampSim 跑
+4. **objdump + Python**：脚本 `scripts/extract_asm_context.py`，输入 GAP binary 路径 + PC 列表，输出每个 PC 的 ±128 行汇编 context
+5. **数据集打包**：合并 (asm_context, label) → `data/dataset/{train,test}.jsonl`
+
+---
+
+# W3b Step 2 — Trace 生成 grid
+
+> 起始：2026/05/09（W3b Step 1 之后）
+> 范围：把 24 个 (kernel, input) trace 跑出来，PC 与 binary 完全对得上
+
+## 设计选择
+
+### Graph 生成阶段污染
+
+W3a 时观察到 `bfs -g 18 -n 1` trace 里 90% 都是 Kron 图生成的代码（顺序内存填充），
+真正 BFS 算法只 ~3M 条指令。两个解决方案：
+
+| 方案 | 优劣 |
+|---|---|
+| Pin `-s skip` 跳过开头 N 条 | N 因 kernel/input 而异，脆弱 |
+| 用 `converter` 预生成 .sg 二进制图文件，kernel `-f file.sg` 读入 | 干净——kernel 只做 I/O + 算法 |
+
+走方案 2。
+
+### ASLR：必须关掉
+
+第一次跑 `bfs -f kron18.sg`，trace 顶部 PC 是 `0x62f5fc2626b6` 这种地址。
+**这是 PIE 二进制的 ASLR 随机化基址**——每次跑都不一样。
+后面 W3b Step 4 用 `objdump` 抽汇编要按 PC 对齐，ASLR 一开就废了。
+
+修复：trace gen 脚本里包一层 `setarch "$(uname -m)" -R`，关掉子进程及其 fork
+出来的 Pin / kernel 的 ASLR。这样 PIE binary 都加载到 canonical 基址 `0x555555550000`，
+任意两次 trace 的同一个 PC 是同一条指令。
+
+验证：跑两遍同一 trace + champsim_no，top-3 PC 完全一致：
+`['0x5555555605b8', '0x5555555605b0', '0x7ffff7fcf87c']`。
+
+### Trace 文件 → objdump 对齐
+
+PIE 基址 `0x555555550000` + binary 内偏移 = 运行时 PC：
+
+```
+runtime PC 0x5555555605b8 = 0x555555550000 + 0x105b8
+$ objdump -d --no-show-raw-insn vendor/gapbs/bfs | grep -E "^ +105b8:"
+   105b8:    movdqa 0x2310(%rip),%xmm0   # 128d0 <_ZTS5CLApp+0x280>
+```
+
+✓ 对得上一条 `movdqa`，BFS 热路径的内存读。**toolchain 端到端通了**。
+
+### xz 压缩参数
+
+第一次 trace gen 完发现 xz 压缩 611MB raw 用了 **85 秒**——太慢了。Benchmark 三档：
+
+| Preset | 时间 | 输出大小 |
+|---|---|---|
+| `xz -1 -T 4` | 2.7 s | 3.8 MB |
+| `xz -3 -T 4` | 2.9 s | 3.6 MB |
+| `xz -6 -T 4` (默认) | 84 s | 3.5 MB |
+
+**`-3` 比默认快 30×，体积只大 3%**——24 trace 多 ~2MB 总磁盘可忽略。改用 `-3`。
+
+## 工程
+
+### 4 个图文件预生成
+
+```bash
+mkdir -p traces/gap/inputs
+for spec in "g 18 kron18" "g 20 kron20" "u 18 urand18" "u 20 urand20"; do
+  vendor/gapbs/converter -<flag> <scale> -s -b traces/gap/inputs/<name>.sg
+done
+```
+
+`-s` 表示 symmetrize——TC (Triangle Count) 需要无向图，其他 kernel 也能跑。
+
+| 文件 | 大小 | 节点 | 边 |
+|---|---:|---:|---:|
+| kron18.sg | 32 MB | 262K | 3.8M undirected |
+| kron20.sg | 128 MB | 1M | 15.7M undirected |
+| urand18.sg | 34 MB | 262K | 4.2M undirected |
+| urand20.sg | 136 MB | 1M | 16.8M undirected |
+
+总 329 MB（gitignore 掉）。
+
+### 单 trace 脚本 `scripts/gen_gap_trace.sh`
+
+签名：`gen_gap_trace.sh <kernel> <input_name> [cap_M=50]`
+
+逻辑：
+1. 校验 binary、tracer、input 都在
+2. 已有同名 .xz 跳过（脚本可重入）
+3. `setarch -R pin -t tracer -o $RAW -t $cap_inst -- kernel -f $sg -n 1`
+4. `xz -3 -T 4 $RAW`（同时 rm 掉 raw）
+5. 输出 `traces/gap/<kernel>_<input>.trace.xz`
+
+### 批量脚本 `scripts/gen_all_gap_traces.sh`
+
+签名：`gen_all_gap_traces.sh [cap_M=50] [parallelism=4]`
+
+xargs 调度 par 个并发 worker，每个 worker 调 `gen_gap_trace.sh`。
+跳过已存在文件，可重入。
+
+## 验证：bfs on kron18 (cap=10M)
+
+```bash
+$ time scripts/gen_gap_trace.sh bfs kron18 10
+[trace] pin done in 10s; raw size 611M
+[xz   ] done in 92s; xz size 3.5M       (验证后改为 xz -3)
+[done ] traces/gap/bfs_kron18.trace.xz
+real    1m41s
+```
+
+喂 `champsim_no`（500K warmup + 2M sim）：
+
+| 指标 | 旧 trace（带 graph gen） | 新 trace（pre-gen + ASLR off） |
+|---|---:|---:|
+| IPC | 2.4712 | **0.2844** |
+| L1D 总 miss（per 单位 sim） | ~80/M | ~60K/M |
+| L1D unique PC | 698 | 977 |
+| Top PC 来源 | libc 顺序填充 | BFS 算法 hot path |
+
+**IPC 从 2.47 跌到 0.28——这才是真正的 BFS pointer-chase 工作负载**。
+prefetcher 在这种 trace 上跑出来的 per-PC AMAT 才是合理的 label 信号。
+
+## 全 grid 跑
+
+```bash
+bash scripts/gen_all_gap_traces.sh 50 4
+```
+
+24 个 trace（6 kernel × 4 input），cap=50M，par=4。**实际 wall：第 1 轮 22 min 出
+20 个 trace + 4 个 sssp 失败（详见下面"踩到的坑"）；第 2 轮 sssp 重跑 2 min**。
+合计约 25 分钟出全 24 个 trace，0 最终失败。
+
+### 踩到的坑：sssp 需要权重图
+
+第一轮 4 个 sssp 都失败，错误信息 `.sg not allowed for weighted graphs`：
+SSSP（Dijkstra）需要带权图，GAP 用 `.wsg` 后缀。其他 5 个 kernel 都吃 `.sg`。
+
+修复两步：
+1. 用 `converter -<flag> <scale> -s -w -b file.wsg` 多生成 4 个权重图
+2. `gen_gap_trace.sh` 加 `case "$KERNEL" in sssp) INPUT_EXT="wsg";; *) INPUT_EXT="sg";; esac`
+
+跑第 2 轮 `gen_all_gap_traces.sh`——会自动跳过已完成的 20 个，只补 4 个 sssp。
+
+| 文件 | 大小 |
+|---|---|
+| kron18.wsg | 61 MB |
+| kron20.wsg | 248 MB |
+| urand18.wsg | 66 MB |
+| urand20.wsg | 264 MB |
+
+### 全 24 trace 的 .xz 体积（MB，cap=50M）
+
+| kernel |    kron18 |    kron20 |   urand18 |   urand20 |
+|--------|----------:|----------:|----------:|----------:|
+| bfs    |       6.8 |      19.1 |      12.6 |      20.8 |
+| pr     |      31.4 |      24.5 |      34.4 |      27.0 |
+| sssp   |      16.8 |      17.5 |      21.5 |      20.3 |
+| bc     |      20.0 |      16.4 |      24.4 |      19.1 |
+| cc     |      10.5 |      21.7 |      15.3 |      20.3 |
+| tc     |      23.1 |      19.8 |      21.1 |      22.0 |
+
+总共 ~480 MB。`bfs_kron18` 最小（6.8MB）—— BFS 在 262K 节点上几百万指令就跑完，
+trace 没填满 50M cap。`pr_*` 最大——PageRank 多轮迭代充满 cap。
+
+### champsim_no smoke (1M warmup + 5M sim) — IPC
+
+跑 `scripts/gap_no_sweep.sh` 在 24 trace 上各跑 5M sim baseline：
+
+| kernel |    kron18 |    kron20 |   urand18 |   urand20 |
+|--------|----------:|----------:|----------:|----------:|
+| bfs    |    0.2685 |    0.2317 |    0.2862 |    0.2314 |
+| pr     |    0.2745 |    0.2317 |    0.2747 |    0.2313 |
+| sssp   |    0.3710 |    0.2317 |    0.3408 |    0.2316 |
+| bc     |    0.3907 |    0.2323 |    0.3906 |    0.2317 |
+| cc     |    0.2556 |    0.2309 |    0.2324 |    0.2315 |
+| tc     |    0.2991 |    0.2315 |    0.2537 |    0.2318 |
+
+**关键观察：所有 kron20 / urand20 列 IPC 都聚到 0.231 附近**——这不是巧合，
+而是因为 5M sim 窗口在大图（1M 节点）上还没出完图加载阶段，IPC 反映的是
+.sg 文件的内存映射 + CSR 反序列化，所有 kernel 都一样。**正式 W3b 跑数据
+集时大图必须用更长 sim 窗口（50M 或不限制）才能到算法 phase**。
+
+小图（kron18 / urand18）IPC 已经分散开（0.23-0.39），算法行为可见：
+- BC/SSSP 在 kron18 上 IPC 最高（0.39 / 0.37）——访问局部性较好
+- CC/TC 偏低——更多 pointer chasing
+
+### L1D unique PCs（5M sim 内的 demand fill 唯一 PC 数）
+
+| kernel |    kron18 |    kron20 |   urand18 |   urand20 |
+|--------|----------:|----------:|----------:|----------:|
+| bfs    |       922 |       722 |       921 |       722 |
+| pr     |       924 |       722 |       923 |       722 |
+| sssp   |      1080 |       727 |      1093 |       727 |
+| bc     |       951 |       721 |       952 |       721 |
+| cc     |       906 |       705 |       901 |       705 |
+| tc     |       905 |       691 |       903 |       691 |
+
+**~700-1100 unique PC 每个 trace**——同样地，kron20/urand20 列偏低（~720）也是
+图加载阶段为主的反映。小图的多样化（~900-1100）说明算法 phase 已经进入。
+
+### L1D LOAD miss（次数，5M sim）
+
+| kernel |    kron18 |    kron20 |   urand18 |   urand20 |
+|--------|----------:|----------:|----------:|----------:|
+| bfs    |    269276 |    443392 |    332695 |    443422 |
+| pr     |    304849 |    442322 |    304843 |    442305 |
+| sssp   |    248388 |    442901 |    253602 |    442943 |
+| bc     |    206584 |    443021 |    206553 |    442991 |
+| cc     |    291084 |    443152 |    326896 |    443117 |
+| tc     |    243899 |    443420 |    329233 |    443395 |
+
+200K-450K L1D miss / 5M sim — **memory pressure 充足，per-PC AMAT 信号
+能够稳定区分 prefetcher 效果**。
+
+## Step 2 完成度
+
+- [x] 4 个图文件预生成（.sg + .wsg 各 4 个）
+- [x] gen_gap_trace.sh 脚本（含 setarch ASLR 关 + xz -3 + sssp/.wsg 路径分支）
+- [x] gen_all_gap_traces.sh 批量脚本（par=4 默认，可重入）
+- [x] 单 trace 验证：bfs+kron18 IPC=0.28，977 PC，PC ↔ objdump 完全对齐
+- [x] 24-trace 全 grid 跑完（25 min wall，sssp 第二轮重跑 2 min，最终 0 失败）
+- [x] champsim_no IPC + L1D PC + L1D miss + xz size 四张表填好
+
+## 已知限制 / 移交 W3 后续步骤
+
+- **大图（kron20 / urand20）需要更长 sim 窗口才能进入算法 phase**——本次 5M
+  sim sweep 的 IPC 聚到 0.23 是图加载主导的；W3b Step 3（full grid）跑 prefetcher
+  比较时建议用 cap=50M 的完整 trace + 长 sim 窗口（比如 30M+），或者直接对小图
+  (kron18 / urand18) 做主要 label 提取。
+- **bfs_kron18 trace 体积只有 6.8MB**——BFS 在 262K 节点上几百万指令完成，
+  没用满 50M cap。这本身不是问题，trace 内容仍然是真实的算法工作负载。
+

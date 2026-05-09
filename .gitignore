@@ -1,9 +1,17 @@
 traces/*.xz
+traces/gap/*.trace
+traces/gap/*.xz
+traces/gap/*.kernelout
+traces/gap/inputs/
+traces/gap/logs/
 
 # Pin SDK (155 MB, vendored, redownload via plan.md)
 vendor/pin
 vendor/pin-3.30-*/
 vendor/pin-3.30.tar.gz
+
+# GAPBS (cloned, ~10MB source + built binaries)
+vendor/gapbs/
 
 # Pin tracer build artifacts
 champsim/tracer/pin/obj-intel64/

@@ -15,6 +15,7 @@
  */
 
 #include <algorithm>
+#include <cstdio>
 #include <utility>
 #include <nlohmann/json.hpp>
 
@@ -69,6 +70,19 @@ void to_json(nlohmann::json& j, const CACHE::stats_type& stats)
     }
 
     statsmap.emplace(access_type_names.at(champsim::to_underlying(type)), nlohmann::json{{"hit", hits}, {"miss", misses}, {"mshr_merge", mshr_merges}});
+  }
+
+  // PF-LLM W3b: emit per-PC AMAT table — only if non-empty (skip warmup snapshots).
+  if (!stats.per_pc_load_latency.empty()) {
+    nlohmann::json per_pc = nlohmann::json::object();
+    for (const auto& [pc, val] : stats.per_pc_load_latency) {
+      if (val.second == 0)
+        continue;
+      char hex[24];
+      std::snprintf(hex, sizeof(hex), "0x%lx", static_cast<unsigned long>(pc));
+      per_pc[hex] = nlohmann::json{{"sum", val.first}, {"count", val.second}};
+    }
+    statsmap.emplace("per_pc_load_latency", per_pc);
   }
 
   j = statsmap;
