@@ -657,3 +657,222 @@ trace 没填满 50M cap。`pr_*` 最大——PageRank 多轮迭代充满 cap。
 - **bfs_kron18 trace 体积只有 6.8MB**——BFS 在 262K 节点上几百万指令完成，
   没用满 50M cap。这本身不是问题，trace 内容仍然是真实的算法工作负载。
 
+---
+
+# W3 剩余工作（next sessions follow-up）
+
+> 写在这里方便下次接上。Step 1-2 已交付（per-PC AMAT 仪器化 + 24 trace + 4 张
+> 诊断表）；剩下 Step 3-6 还要做。
+
+## Step 3 — Prefetcher degree 参数化（~半天）
+
+**目标**：把 4 个 prefetcher 的 degree 做成可配置，产出 12 个新 binary
+（prefetcher × {1,2,3}），加上 `champsim_no` 共 13 个配置。这是 PF-LLM 论文
+label 三元组 `(PF Sel, PF Degree, Filter)` 里 `PF Degree` 维度的来源。
+
+### 各 prefetcher 的 degree 含义
+
+| prefetcher | 当前常数 | 文件 | degree 解释 |
+|---|---|---|---|
+| ip_stride | `PREFETCH_DEGREE = 3` | `champsim/prefetcher/ip_stride/ip_stride.h:38` | lookahead 步数 |
+| stream | `PREFETCH_DEGREE = 4` | `champsim/prefetcher/stream/stream.h:36` | 单 stream 一次发几个 |
+| sms | （没有显式 degree） | `champsim/prefetcher/sms/sms.h` | PHT 命中时 cap 发射数（新加） |
+| sandbox | `PREF_DEGREE = 4` | `champsim/prefetcher/sandbox/sandbox.h:32` | 每个方向（正/负）发几个 |
+
+### degree=1/2/3 三档定义
+
+| degree | ip_stride | stream | sms (PHT cap) | sandbox |
+|---|---:|---:|---:|---:|
+| 1 (弱) | 1 | 2 | 8 | 2 |
+| 2 (中) | 2 | 4 | 16 | 4 |
+| 3 (强) | 3 | 6 | 24 | 6 |
+
+### 实现要点
+
+1. 改各 prefetcher .h，常数从 `constexpr static int X = N` 改成
+   `#ifndef X_DEGREE` / `#define X_DEGREE N` / `#endif` + `constexpr static int X = X_DEGREE`，可被 `-D` 覆盖
+2. SMS 加新常数 `PHT_REPLAY_CAP`，在 `pht_lookup_and_queue` 里 `if (queued >= PHT_REPLAY_CAP) break`
+3. `scripts/build_prefetcher.sh` 加可选第二参数 degree：
+   ```
+   build_prefetcher.sh stream 2  →  champsim_stream_d2 (烤入 -DSTREAM_DEGREE=4)
+   ```
+   通过修改派生 config 的 `executable_name` + 用 `make CXXFLAGS_EXTRA="-DSTREAM_DEGREE=4"` 之类
+4. 写 `scripts/build_all_degrees.sh` 一次构 13 个 binary
+
+### Done criteria
+
+- 13 个 binary 在 `champsim/bin/`：`champsim_no` + `champsim_{ip_stride,stream,sms,sandbox}_d{1,2,3}`
+- 单跑验证：同一 trace 上 d3 比 d1 发射的 prefetch 多 ~3×
+- 健全性：d1 IPC ≥ no（保底）、d3 不一定优于 d2（degree 太大可能浪费带宽）
+
+---
+
+## Step 4 — Full prefetcher × degree × trace grid（~3-5 小时 wall）
+
+**目标**：13 配置 × 24 trace = **312 ChampSim 跑**，每跑用 cap=50M 的全 trace +
+30M sim 窗口，产出 312 个 JSON（每个含 per-PC AMAT 表），喂 Step 6 算 label。
+
+### 实现
+
+写 `scripts/run_w3_grid.sh`，按 W2 的 `run_smoke_parallel.sh` 模板：
+- 4 trace × 13 配置笛卡尔积，xargs -P 8 并行
+- 每跑 `--warmup-instructions 1000000 --simulation-instructions 30000000`（30M sim）
+- 输出 `data/w3_grid/<trace>_<config>.json`
+
+### Wall clock 估算
+
+- 单跑 30M sim ≈ 4 分钟（按 W2 mcf 5M 1.5 min 外推）
+- 串行 312 × 4 = 21 小时
+- 并行 8: ~2.5-3 小时
+- 并行 16: ~1.5 小时（可能 RAM 紧 — 22 核机 15GB RAM；ChampSim 单跑 ~200MB，16 并发 ≤ 3.5GB OK）
+
+### 储存
+
+312 × ~1.5 MB JSON = ~470 MB 总 → fine。把 per-PC AMAT 表都留着，后面 Step 6 要用。
+
+### Done criteria
+
+- 312 个 JSON 都在 `data/w3_grid/`，文件名 schema `<kernel>_<input>_<prefetcher>_d<N>.json`（no 配置就是 `<kernel>_<input>_no.json`）
+- 抽样 5-10 个验证：roi.cpu0_L1D.per_pc_load_latency 非空，PC 数与 Step 2 sweep 对应
+
+---
+
+## Step 5 — objdump → ±128 行汇编 context 抽取（~半天）
+
+**目标**：写 `scripts/extract_asm_context.py`，给定 GAP binary 路径 + 一组 PC，
+返回每个 PC 周围 ±128 行汇编字符串。这是 PF-LLM LLM 输入的来源。
+
+### 实现要点
+
+```python
+def build_pc_to_asm_index(binary_path: str, context_lines: int = 128) -> dict:
+    """
+    1. subprocess.run(['objdump', '-d', '--no-show-raw-insn', binary_path])
+    2. 解析行：'   105b8: movdqa 0x2310(%rip),%xmm0   # ...'
+       提取 (file_offset_hex, instruction_text)
+    3. 按行号排序，存 asm_lines[i] = (offset, text)
+    4. 给定 runtime PC：
+       - 减 PIE 基址 0x555555550000 得 file offset
+       - 二分查找在 asm_lines 中的索引 idx
+       - 返回 asm_lines[idx-128 : idx+128+1] 拼接成单字符串
+    """
+```
+
+### 关键细节
+
+- **PIE 基址**：trace 已经用 `setarch -R` 关掉 ASLR，binary 加载到固定 `0x555555550000`。Step 2 已验证：runtime PC `0x5555555605b8` = base + offset `0x105b8`，objdump 一查就到。
+- **跨函数边界**：±128 行可能跨越函数（objdump 输出含 `function:` header 行）。论文也是这样做的，**保留**这些 header 行作为 context 的一部分（提供函数边界语义信息）。
+- **特殊 PC**：`0x0`（page walk 触发的 fill，没有 demand IP）→ 标记为 invalid，dataset 里跳过。
+- **libc PC**（`0x7ffff7fcxxxx`）→ 这些 PC 在 GAP binary objdump 里找不到（属于 libc.so）。两个选择：
+  (a) 跳过 libc PC 不进训练集
+  (b) 也给 libc.so 做 objdump，挂第二个索引
+  → 推荐 (a)，简单干净，loss 一些样本但可控
+
+### Done criteria
+
+- `scripts/extract_asm_context.py <binary> --pcs <pc_list_file>` 输出 JSON
+  `{pc_hex: asm_string, ...}`
+- 用 bfs_kron18 trace 的 top-50 PC 测一遍，每个都能拿到非空 asm context
+- 抽几个手工对照 objdump 验证正确
+
+---
+
+## Step 6 — Label 决策 + JSONL 数据集打包（~半天）
+
+**目标**：合并 Step 4 的 per-PC AMAT 表 + Step 5 的 asm context，按 PF-LLM 论文
+§4.2 的规则给每个 (binary, PC) 算 (PF Sel, PF Degree, Filter)，输出 JSONL
+训练集。
+
+### Label 决策
+
+每个 (binary, PC) 在 13 个配置下都有 AMAT (除非 PC 在某配置里没出现 → 缺失值)：
+
+```
+amat[no][pc]              = baseline
+amat[ip_stride_d1][pc]    = ...
+amat[ip_stride_d2][pc]    = ...
+...
+amat[sandbox_d3][pc]      = ...
+```
+
+按论文规则：
+1. 在 12 个 (prefetcher, degree) 配置里取 argmin AMAT → 得 `(PF_Sel*, PF_Degree*)`
+2. 与 `amat[no][pc]` 比较：
+   - 如果 `amat[best_config][pc] < amat[no][pc] - tolerance` → label = `(PF_Sel*, PF_Degree*, Filter=False)`
+   - 否则（best 都帮不上忙）→ label = `(Filter=True, PF_Sel=None, PF_Degree=None)`
+3. tolerance：论文用 1% 或固定 cycle 数；建议 5% 相对（避免噪声 PC 被误标）
+
+### 数据集 schema
+
+每行 JSONL：
+```json
+{
+  "binary": "bfs",
+  "pc_runtime": "0x5555555605b8",
+  "pc_offset": "0x105b8",
+  "asm_context": "<±128 行汇编字符串>",
+  "label": {
+    "filter": false,
+    "pf_sel": "stream",
+    "pf_degree": 2
+  },
+  "_aux": {
+    "amat_no": 175.4,
+    "amat_best": 31.7,
+    "trace_origins": ["bfs_kron18", "bfs_urand18"]
+  }
+}
+```
+
+### Train / test 划分
+
+PF-LLM 论文用 SPEC2006 train、SPEC2017 test。我们用 GAP，没有自然分组。两个方案：
+
+| 方案 | 优点 | 缺点 |
+|---|---|---|
+| **(a) Per-kernel hold-out**：3 kernel train, 3 kernel test | 评估泛化到新算法 | 样本数 6 个 kernel 不够稳，划分敏感 |
+| **(b) Per-input hold-out**：kron train, urand test (or vice versa) | 评估泛化到新输入 | 同 binary 同 PC 在两侧都出现 |
+
+推荐 **混合 (a)**：随机选 4 kernel × 4 input = 16 trace 做 train，剩 8 trace 做 test，
+但保证 test 里至少有 1 个 kernel 是 train 没见过的（验证泛化）。
+
+具体可以：train = {bfs, pr, bc, cc} × all inputs；test = {sssp, tc} × all inputs。
+
+### 数据集体量预估
+
+- 24 trace × ~700-1100 unique PC ≈ 24K (trace, PC) 对
+- 同一 binary 的同一 PC 跨 trace 应该合并（多 trace 验证 label 稳定性）
+- 估计 5K-15K 独立 (binary, PC) 对 → 万级，刚到 PF-LLM 论文规模下沿
+- 如果不够：扩 cap 到 100M、加更多 input scale (kron21、kron17)
+
+### Done criteria
+
+- `scripts/build_dataset.py` 跑完产出 `data/dataset/{train,test}.jsonl`
+- 行数 5K+，每行 schema 验证通过
+- label 分布合理：Filter 占比 10-30%，4 个 prefetcher × 3 degree 至少各占 5%
+- 抽样 10 行人工检查：asm_context 是真汇编、label 与 AMAT 数据自洽
+
+---
+
+## 整体优先级 & 风险
+
+**关键路径**：Step 4 (full grid) 是最大时间投入（~3-5h wall）。所有其它 step
+都是几小时人工工作 + 短 wall。
+
+**最大风险**：Step 6 数据集体量可能不够（< 5K 样本），需要回头扩 trace（加更多 input
+scale 或更长 cap）。建议 Step 4 跑完先做一遍 Step 6 估算样本数，再决定是否扩 trace。
+
+**可平行**：
+- Step 3 (build) 与 Step 5 (objdump) 互不依赖，可同时进行
+- Step 4 必须等 Step 3
+- Step 6 必须等 Step 4 + Step 5
+
+**预估总时间**：
+- 实现 + 验证：~2-3 个工作日（3+5+6 各半天，4 一晚后台跑）
+- 与 plan.md 原定 W3 时间表（1 周）一致，可能略宽松
+
+## 完成 W3 之后
+
+- W3 数据集就绪 → 进 W4：LLaMA-Factory + Qwen2.5-Coder-0.5B + LoRA 跑训练
+- 这是项目第一次需要 GPU（plan §5 W4），需要确认远程 GPU 通道
+
