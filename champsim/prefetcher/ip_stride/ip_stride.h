@@ -35,7 +35,10 @@ struct ip_stride : public champsim::modules::prefetcher {
 
   constexpr static std::size_t TRACKER_SETS = 256;
   constexpr static std::size_t TRACKER_WAYS = 4;
-  constexpr static int PREFETCH_DEGREE = 3;
+#ifndef IP_STRIDE_DEGREE
+#define IP_STRIDE_DEGREE 3
+#endif
+  constexpr static int PREFETCH_DEGREE = IP_STRIDE_DEGREE;
 
   std::optional<lookahead_entry> active_lookahead;
 

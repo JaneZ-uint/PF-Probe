@@ -38,6 +38,10 @@ struct sms : public champsim::modules::prefetcher {
   static constexpr std::size_t FT_SIZE = 32;
   static constexpr std::size_t AGT_SIZE = 32;
   static constexpr std::size_t PHT_SETS = 1024;
+#ifndef SMS_PHT_REPLAY_CAP
+#define SMS_PHT_REPLAY_CAP 16
+#endif
+  static constexpr std::size_t PHT_REPLAY_CAP = SMS_PHT_REPLAY_CAP;
   static constexpr std::size_t PHT_WAYS = 16; // 16K entries total
 
   struct ft_entry {

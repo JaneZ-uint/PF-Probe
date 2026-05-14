@@ -74,6 +74,8 @@ std::size_t sms::pht_lookup_and_queue(champsim::address pc, champsim::page_numbe
 
   std::size_t queued = 0;
   for (std::size_t i = 0; i < BLOCKS_PER_REGION; ++i) {
+    if (queued >= PHT_REPLAY_CAP)
+      break;
     if (it->pattern.test(i) && i != cur_offset) {
       // Build prefetch address: page << log2(page_size) | (i << log2(block_size))
       champsim::block_number page_first_block{champsim::address{page}};

@@ -31,7 +31,10 @@ struct sandbox : public champsim::modules::prefetcher {
   static constexpr std::size_t BLOOM_HASHES = 2;
   static constexpr uint32_t PHASE_LENGTH = 256;
   static constexpr uint32_t NUM_CYCLE_OFFSETS = 4;
-  static constexpr uint32_t PREF_DEGREE = 4; // per direction
+#ifndef SANDBOX_DEGREE
+#define SANDBOX_DEGREE 4
+#endif
+  static constexpr uint32_t PREF_DEGREE = SANDBOX_DEGREE; // per direction
   static constexpr uint32_t BLOCKS_PER_PAGE = 64;
   static constexpr std::size_t NUM_EVALUATED = 16;
 

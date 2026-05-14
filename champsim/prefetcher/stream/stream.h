@@ -34,7 +34,10 @@ struct stream : public champsim::modules::prefetcher {
   // Pythia default: 64 fully-associative trackers.
   constexpr static std::size_t TRACKER_SETS = 1;
   constexpr static std::size_t TRACKER_WAYS = 64;
-  constexpr static int PREFETCH_DEGREE = 4;
+#ifndef STREAM_DEGREE
+#define STREAM_DEGREE 4
+#endif
+  constexpr static int PREFETCH_DEGREE = STREAM_DEGREE;
 
   std::optional<lookahead_entry> active_lookahead;
   champsim::msl::lru_table<tracker_entry> table{TRACKER_SETS, TRACKER_WAYS};
