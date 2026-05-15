@@ -11,7 +11,11 @@ Outputs:
   - data/dataset/test.jsonl
 
 Usage:
-  python3 scripts/build_dataset.py [--grid-dir data/w3_grid] [--min-count 10] [--tolerance 0.05]
+  python3 scripts/build_dataset.py [--grid-dir data/w3_grid] [--min-count 3] [--tolerance 0.05]
+
+By default emits one record per (kernel, input, PC) — same binary PC across different
+inputs becomes separate samples. Use --merge-inputs to majority-vote merge across inputs
+(produces fewer but more confident labels).
 """
 
 import argparse
@@ -161,6 +165,9 @@ def main():
                         help="Relative AMAT improvement threshold for Filter decision (default: 0.05)")
     parser.add_argument("--context-lines", type=int, default=128,
                         help="Assembly context lines (default: 128)")
+    parser.add_argument("--merge-inputs", action="store_true",
+                        help="Merge same (kernel, PC) across inputs via majority vote "
+                             "(default: emit one record per (kernel, input, PC))")
     parser.add_argument("--output-dir", default="data/dataset", help="Output directory")
     args = parser.parse_args()
 
@@ -171,13 +178,10 @@ def main():
     # ── Phase 1: Load all per-PC AMAT data ──────────────────────────────
     print("Phase 1: Loading per-PC AMAT from grid JSONs...", file=sys.stderr)
 
-    # Structure: per_trace_labels[kernel][input][pc_hex] = label_dict
-    # We process per (kernel, input, pc) first, then merge across inputs
-    # Final: samples[kernel][pc_hex] = merged_label
-
-    # For each (kernel, input), load all 13 configs and do label decision
-    per_trace_labels = defaultdict(lambda: defaultdict(list))
-    # per_trace_labels[kernel][pc_hex] = [label_from_inp1, label_from_inp2, ...]
+    # per_trace_labels[(kernel, input, pc_hex)] = label_dict
+    per_trace_labels = {}
+    # Also group by (kernel, pc_hex) for merge mode
+    per_kernel_pc_labels = defaultdict(list)
 
     total_loaded = 0
     for kernel in KERNELS:
@@ -204,26 +208,44 @@ def main():
 
                 label = decide_label(amat_by_config, args.tolerance)
                 if label is not None:
-                    per_trace_labels[kernel][pc_hex].append(label)
+                    per_trace_labels[(kernel, inp, pc_hex)] = label
+                    per_kernel_pc_labels[(kernel, pc_hex)].append(label)
 
     print(f"  Loaded {total_loaded} JSONs", file=sys.stderr)
 
-    # ── Phase 2: Merge labels across inputs (majority vote) ─────────────
-    print("Phase 2: Merging labels across inputs...", file=sys.stderr)
-
-    merged = {}  # (kernel, pc_hex) -> merged_label
-    for kernel in KERNELS:
-        for pc_hex, labels in per_trace_labels[kernel].items():
-            merged[(kernel, pc_hex)] = majority_label(labels)
-
-    print(f"  {len(merged)} unique (kernel, PC) pairs", file=sys.stderr)
+    # ── Phase 2: Build sample list ──────────────────────────────────────
+    if args.merge_inputs:
+        print("Phase 2: Merging labels across inputs (majority vote)...",
+              file=sys.stderr)
+        samples = {}  # (kernel, pc_hex) -> record_info
+        for (kernel, pc_hex), labels in per_kernel_pc_labels.items():
+            ml = majority_label(labels)
+            samples[(kernel, pc_hex)] = {
+                "label": ml,
+                "input": None,  # merged
+            }
+        print(f"  {len(samples)} unique (kernel, PC) pairs", file=sys.stderr)
+    else:
+        print(f"Phase 2: Per-(kernel, input, PC) mode — "
+              f"{len(per_trace_labels)} samples...", file=sys.stderr)
+        samples = {}
+        for (kernel, inp, pc_hex), label in per_trace_labels.items():
+            # Add trace-level aux info
+            label["vote_count"] = 1
+            label["total_traces"] = 1
+            samples[(kernel, inp, pc_hex)] = {
+                "label": label,
+                "input": inp,
+            }
 
     # ── Phase 3: Extract assembly context ───────────────────────────────
     print("Phase 3: Extracting assembly context...", file=sys.stderr)
 
     # Group PCs by kernel to avoid re-running objdump
     pcs_by_kernel = defaultdict(set)
-    for (kernel, pc_hex) in merged:
+    for key in samples:
+        kernel = key[0]
+        pc_hex = key[-1]
         pcs_by_kernel[kernel].add(pc_hex)
 
     asm_cache = {}  # (kernel, pc_hex) -> {"pc_offset": ..., "asm_context": ...}
@@ -250,7 +272,8 @@ def main():
                     "asm_context": ctx,
                 }
 
-    print(f"  {len(asm_cache)} PCs with asm context", file=sys.stderr)
+    print(f"  {len(asm_cache)} unique (kernel, PC) pairs with asm context",
+          file=sys.stderr)
 
     # ── Phase 4: Build JSONL records ────────────────────────────────────
     print("Phase 4: Building JSONL records...", file=sys.stderr)
@@ -259,7 +282,12 @@ def main():
     test_records = []
     skipped_no_asm = 0
 
-    for (kernel, pc_hex), label in merged.items():
+    for key, sample in samples.items():
+        kernel = key[0]
+        pc_hex = key[-1]
+        inp = sample["input"]
+        label = sample["label"]
+
         if (kernel, pc_hex) not in asm_cache:
             skipped_no_asm += 1
             continue
@@ -268,6 +296,7 @@ def main():
 
         record = {
             "binary": kernel,
+            "input": inp,  # may be None when --merge-inputs is set
             "pc_runtime": pc_hex,
             "pc_offset": asm_info["pc_offset"],
             "asm_context": asm_info["asm_context"],
@@ -290,11 +319,13 @@ def main():
         else:
             test_records.append(record)
 
-    # Sort by (binary, pc_offset) for reproducibility
-    train_records.sort(key=lambda r: (r["binary"], r["pc_offset"]))
-    test_records.sort(key=lambda r: (r["binary"], r["pc_offset"]))
+    # Sort by (binary, input, pc_offset) for reproducibility
+    sort_key = lambda r: (r["binary"], r["input"] or "", r["pc_offset"])
+    train_records.sort(key=sort_key)
+    test_records.sort(key=sort_key)
 
-    print(f"  Skipped {skipped_no_asm} PCs without asm context", file=sys.stderr)
+    print(f"  Skipped {skipped_no_asm} samples without asm context",
+          file=sys.stderr)
 
     # ── Phase 5: Write output ───────────────────────────────────────────
     train_path = output_dir / "train.jsonl"
