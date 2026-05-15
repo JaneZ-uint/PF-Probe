@@ -1038,8 +1038,305 @@ scale 或更长 cap）。建议 Step 4 跑完先做一遍 Step 6 估算样本数
 - 实现 + 验证：~1-2 个工作日（5+6 各半天，4 一晚后台跑）
 - 与 plan.md 原定 W3 时间表（1 周）一致，有余裕
 
+---
+
+# W3b Step 5 — objdump → ±128 行汇编 context 抽取（已完成）
+
+> 完成：2026/05/15
+> 范围：给定 GAP binary + 运行时 PC，提取 ±128 行汇编 context
+
+## 实现
+
+`scripts/extract_asm_context.py`：
+
+### 工作流程
+
+1. `objdump -d --no-show-raw-insn <binary>` 解析全部指令行
+2. 建立 sorted offset → line index 索引
+3. 对每个运行时 PC：减 PIE 基址 `0x555555550000` 得 file offset
+4. 二分查找最近指令行（largest offset ≤ file_offset）
+5. 取 ±128 行 context，目标行以 `>>>` 标记
+
+### 用法
+
+```bash
+# 从 W3 grid JSON 自动提取 PCs：
+python3 scripts/extract_asm_context.py vendor/gapbs/bfs \
+    --from-grid data/w3_grid/bfs_kron18_no.json -o out.json
+
+# 带最低 fill count 过滤：
+python3 scripts/extract_asm_context.py vendor/gapbs/bfs \
+    --from-grid data/w3_grid/bfs_kron18_no.json --min-count 50 -o out.json
+
+# 手动指定 PCs：
+python3 scripts/extract_asm_context.py vendor/gapbs/bfs \
+    --pc 0x5555555596b6 --pc 0x555555559ae0
+```
+
+### 输出 schema
+
+```json
+{
+  "0x5555555596b6": {
+    "pc_offset": "0x96b6",
+    "asm_context": "    96b0: ...\n>>>     96b6:\tmov    0x80(%rsp),%rdi\n    96bd: ..."
+  }
+}
+```
+
+### PC 分类处理
+
+| PC 类型 | 处理 |
+|---|---|
+| `0x0`（page walk fill） | 跳过 |
+| `0x555555550000 + offset`（binary 内） | 提取 context |
+| `0x7ffff7fc...`（libc/vdso） | 跳过（outside_binary） |
+
+## 验证
+
+### 6 个 kernel 全部通过（kron18 baseline JSON，min-count=50）
+
+| kernel | 提取 PCs | 跳过 (null) | 跳过 (outside) | 失败 |
+|---|---:|---:|---:|---:|
+| bfs | 19 | 1 | 24 | 0 |
+| pr | 14 | 1 | 25 | 0 |
+| sssp | 18 | 1 | 114 | 0 |
+| bc | 9 | 1 | 26 | 0 |
+| cc | 10 | 1 | 25 | 0 |
+| tc | 6 | 1 | 35 | 0 |
+
+### 完整提取（无 min-count 过滤，kron18 baseline）
+
+| kernel | binary 内 PCs |
+|---|---:|
+| bfs | 122 |
+| pr | 87 |
+| sssp | 117 |
+| bc | 123 |
+| cc | 73 |
+| tc | 75 |
+
+### Union across 4 inputs（每个 kernel 的独立 binary PC 数）
+
+| kernel | 唯一 binary PCs |
+|---|---:|
+| bfs | 134 |
+| pr | 94 |
+| sssp | 136 |
+| bc | 136 |
+| cc | 81 |
+| tc | 126 |
+| **合计** | **~707** |
+
+### 手工验证
+
+- `PC=0x5555555596b6` → offset `0x96b6` → objdump: `mov 0x80(%rsp),%rdi` ✓
+- `PC=0x5555555605b8` → offset `0x105b8` → objdump: `movdqa 0x2310(%rip),%xmm0` ✓
+- 所有 context 行数均为 257（128 + 1 + 128），边界处理正确
+- 目标行 `>>>` 标记位置正确
+
+### 中间 PC 处理
+
+部分 PC（如 `0x55555555958d`）落在指令编码中间（`0x958b` 开始的 5 字节 `mov`）。
+脚本正确使用 bisect_right 找到 `0x958b` 作为最近指令，context 以此为中心。
+
+## Step 5 完成度
+
+- [x] `scripts/extract_asm_context.py` 实现
+- [x] PIE 基址 `0x555555550000` 转换
+- [x] 二分查找最近指令（处理 mid-instruction PC）
+- [x] ±128 行 context 抽取，目标行 `>>>` 标记
+- [x] 6 个 kernel 全部通过，0 失败
+- [x] 手工对照 objdump 验证正确
+
+## 工程产出
+
+| 路径 | 类型 | 备注 |
+|---|---|---|
+| `scripts/extract_asm_context.py` | 新增 | ±128 行汇编 context 抽取 |
+
+---
+
+# W3b Step 6 — Label 决策 + JSONL 数据集打包（已完成）
+
+> 完成：2026/05/15
+> 范围：合并 Step 4 per-PC AMAT + Step 5 asm context，输出 train/test.jsonl
+
+## 实现
+
+`scripts/build_dataset.py`：
+
+### 工作流程
+
+1. **加载 AMAT**：遍历 312 个 grid JSON，对每个 (kernel, input, PC) 提取 13 个配置的 AMAT
+2. **Label 决策**：对每个 (kernel, input, PC)：
+   - 在 12 个 prefetcher 配置中取 argmin AMAT → `(PF_Sel*, PF_Degree*)`
+   - 与 baseline (`no`) 比较：改善 > 5% → `Filter=False`；否则 → `Filter=True`
+3. **跨 input 合并**：同 kernel 同 PC 在 4 个 input 上的 label 做 majority vote
+4. **Asm context**：调用 extract_asm_context 抽取 ±128 行汇编
+5. **Train/test 划分**：{bfs, pr, bc, cc} train / {sssp, tc} test
+
+### 用法
+
+```bash
+python3 scripts/build_dataset.py [--min-count 3] [--tolerance 0.05] [--output-dir data/dataset]
+```
+
+### 参数
+
+| 参数 | 默认 | 说明 |
+|---|---|---|
+| `--min-count` | 3 | PC 在某配置下最低 fill 次数才参与 AMAT 计算 |
+| `--tolerance` | 0.05 | AMAT 相对改善阈值（低于此标 Filter=True） |
+| `--context-lines` | 128 | ±N 行汇编 context |
+
+## 产出
+
+### 数据集规模
+
+| 划分 | 记录数 | Kernels | 文件大小 |
+|---|---:|---|---:|
+| Train | 94 | bfs(34), pr(21), bc(26), cc(13) | 1.3 MB |
+| Test | 83 | sssp(43), tc(40) | 1.0 MB |
+| **合计** | **177** | 6 kernel × 4 input | 2.3 MB |
+
+### Label 分布
+
+| 维度 | Train | Test |
+|---|---|---|
+| Filter=True | 35/94 (37.2%) | 37/83 (44.6%) |
+| PF Selection | sandbox(37), stream(10), ip_stride(9), sms(3) | sandbox(27), stream(8), ip_stride(8), sms(3) |
+| PF Degree | d1(27), d2(10), d3(22) | d1(16), d2(10), d3(20) |
+
+### AMAT 统计
+
+| 维度 | Train | Test |
+|---|---|---|
+| AMAT(no) | 8.0 — 192.8 — 428.8 (min/med/max) | 8.0 — 149.8 — 504.4 |
+| AMAT(best) | 8.0 — 38.1 — 419.4 | 7.9 — 38.2 — 427.3 |
+
+### Label 一致性（跨 input 投票）
+
+- 70% unanimous（4/4 input 一致） — train
+- 69% unanimous — test
+- trace count 分布：1 trace(21/23), 2(38/18), 3(2/6), 4(33/36)
+
+### JSONL Schema
+
+```json
+{
+  "binary": "bfs",
+  "pc_runtime": "0x5555555596b6",
+  "pc_offset": "0x96b6",
+  "asm_context": "<257 行汇编>",
+  "label": {"filter": false, "pf_sel": "sandbox", "pf_degree": 1},
+  "_aux": {"amat_no": 24.0, "amat_best": 8.0, "best_config": "sandbox_d1",
+           "vote_count": 2, "total_traces": 2}
+}
+```
+
+### 人工验证
+
+- Filter=False 示例：`bc/0x555555561c7c`，amat_no=24.0 → amat_best=8.0 (sandbox_d1)，改善 67%，正确标 prefetch ✓
+- Filter=True 示例：`bc/0x5555555626a8`，amat_no=241.3 → amat_best=235.1 (sms_d1)，改善 2.5%，低于 5% 阈值，正确标 filter ✓
+- Schema 验证：0/177 错误 ✓
+- asm_context 行数均为 257 ✓
+
+## 与 Done criteria 对照
+
+| 条件 | 状态 | 备注 |
+|---|---|---|
+| `scripts/build_dataset.py` 产出 `data/dataset/{train,test}.jsonl` | ✅ | |
+| 行数 5K+ | ❌ **177 行** | 见下面"体量不足分析" |
+| 每行 schema 验证通过 | ✅ | 0 错误 |
+| label 分布合理：Filter 10-30% | ⚠️ **37-45%** | Filter 偏高，见分析 |
+| 4 prefetcher × 3 degree 各占 5% | ⚠️ | sms 占比偏低（~3%），sandbox 占优 |
+| 抽样 10 行人工检查 | ✅ | asm_context 是真汇编，label 与 AMAT 自洽 |
+
+## 体量不足分析
+
+### 根因
+
+GAP 6 个 kernel 是小型 benchmark，每个 binary 的 `.text` 段只有 ~700-1100 条有 L1D fill 的 PC；
+其中 80% 以上属于 libc/vdso（共享库），objdump 只能覆盖 binary 内的 ~80-136 个 PC。
+跨 4 input 合并后仅 ~707 unique (kernel, PC) 对——这是 GAP 路线的**结构上限**。
+
+### min-count 影响
+
+| min-count | unique PCs | train | test |
+|---:|---:|---:|---:|
+| 1 | 706 | 444 | 262 |
+| 3 | 177 | 94 | 83 |
+| 10 | 135 | 70 | 65 |
+
+min-count=1 能拿到 706 条，但单次 fill 的 AMAT 噪声极大（一次 miss/hit 决定全部）。
+min-count=3 是统计可靠性与样本量的平衡点。
+
+### Filter 偏高原因
+
+许多低频 PC（count=3-10）的 AMAT 在 prefetcher 之间差异很小，因为采样不足导致
+AMAT 值噪声大，低于 5% tolerance 就标了 Filter。这不是 bug，是数据量约束下的
+统计现象。
+
+### 扩展方案（如果 W4 训练效果不佳再执行）
+
+| 方案 | 预估增益 | 代价 |
+|---|---|---|
+| 加 libc.so objdump（方案 b） | +500-800 PCs | 需要找到对应的 libc.so 版本 |
+| 加更多 input scale（kron17, kron21, urand17, urand21） | +50-100 PCs | 重跑 trace + grid，~4h |
+| 加 cap 到 200M | 每个 PC 更多 fill → min-count 过滤丢弃更少 | 重跑 trace + grid，~8h |
+| 不做跨 input 合并，每 (kernel, input, PC) 独立出样本 | ~2300 条 | asm_context 重复，label 可能不一致 |
+
+## Step 6 完成度
+
+- [x] `scripts/build_dataset.py` 实现
+- [x] 312 JSON 加载 + per-PC AMAT 提取
+- [x] Label 决策：argmin AMAT + 5% tolerance filter
+- [x] 跨 input majority vote 合并
+- [x] asm context 集成
+- [x] Train/test 划分（4 kernel train / 2 kernel test）
+- [x] Schema 验证 + 人工抽查
+- [ ] 体量 5K+ 目标未达成（177 条，结构上限 ~700 条）
+
+## 工程产出
+
+| 路径 | 类型 | 备注 |
+|---|---|---|
+| `scripts/build_dataset.py` | 新增 | Label 决策 + JSONL 打包 |
+| `data/dataset/train.jsonl` | 新增 | 94 条训练样本 |
+| `data/dataset/test.jsonl` | 新增 | 83 条测试样本 |
+
+---
+
+# W3 总结
+
+## 时间线
+
+| Step | 日期 | 内容 |
+|---|---|---|
+| Day 1 | 2026/05/09 | Pin SDK + tracer build + bug fix |
+| W3a | 2026/05/09 | GAPBS 编译 + 端到端验证 |
+| Step 1 | 2026/05/09 | ChampSim per-PC AMAT 仪器化 |
+| Step 2 | 2026/05/09 | 24 trace 生成 grid |
+| Step 3 | 2026/05/14 | Degree 参数化 + 13 binary |
+| Step 4 | 2026/05/15 | 312 ChampSim full grid |
+| Step 5 | 2026/05/15 | objdump asm context 抽取 |
+| Step 6 | 2026/05/15 | Label 决策 + JSONL 数据集 |
+
+## 产出清单
+
+| 类别 | 数量 |
+|---|---|
+| GAP traces (xz) | 24 个，~480 MB |
+| ChampSim binaries | 13 个 (no + 4×3 degree) |
+| Grid JSONs | 312 个，160 MB |
+| Dataset (train + test) | 177 条，2.3 MB |
+| Scripts | 7 个（gen/build/extract/run） |
+| ChampSim patches | per-PC AMAT + degree 参数化 |
+
 ## 完成 W3 之后
 
 - W3 数据集就绪 → 进 W4：LLaMA-Factory + Qwen2.5-Coder-0.5B + LoRA 跑训练
 - 这是项目第一次需要 GPU（plan §5 W4），需要确认远程 GPU 通道
+- 如果训练效果不佳，优先执行"加 libc objdump"或"不做跨 input 合并"扩展方案
 
