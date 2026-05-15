@@ -1,0 +1,15 @@
+# GPU environment requirements for PF-LLM training
+# Install on GPU machine with: pip install -r training/requirements_gpu.txt
+
+torch>=2.1.0
+transformers>=4.43.0
+peft>=0.11.0
+trl>=0.8.6
+accelerate>=0.30.0
+datasets>=2.18.0
+evaluate
+bitsandbytes>=0.43.0  # for 4-bit fallback if OOM
+
+# LLaMA-Factory: install separately from source
+# git clone https://github.com/hiyouga/LLaMA-Factory
+# cd LLaMA-Factory && pip install -e ".[torch,metrics]"

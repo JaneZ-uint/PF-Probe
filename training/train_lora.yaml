@@ -1,0 +1,54 @@
+# PF-LLM LoRA Training Config for LLaMA-Factory
+# Based on PF-LLM paper (Xu et al., ASPLOS'26) Listing 1
+#
+# Run with: llamafactory-cli train training/train_lora.yaml
+
+### Model
+model_name_or_path: Qwen/Qwen2.5-Coder-0.5B-Instruct
+
+### Method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 16
+lora_alpha: 32
+lora_dropout: 0.05
+lora_target: all  # apply LoRA to all linear layers (closest to full fine-tune)
+
+### Dataset
+dataset: pf_llm_train
+dataset_dir: data/dataset  # relative to working dir; adjust to absolute path on GPU machine
+template: qwen  # applies <|im_start|>/<|im_end|> ChatML template automatically
+cutoff_len: 4096  # covers our ±128 line context (median ~2200 tokens, max ~3100)
+train_on_prompt: false  # CRITICAL: loss mask — only compute loss on JSON output tokens
+
+### Training
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8  # effective batch = 8
+num_train_epochs: 20  # 235 samples × 20 epochs ÷ 8 batch ≈ 588 gradient updates
+learning_rate: 1.0e-4  # slightly higher than paper's 1e-5 to compensate for LoRA
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+weight_decay: 0.01
+max_grad_norm: 1.0
+
+### Precision
+bf16: true
+
+### Logging & saving
+logging_steps: 10
+save_steps: 100
+save_total_limit: 5
+output_dir: output/pf_llm_lora
+overwrite_output_dir: true
+report_to: none  # set to "tensorboard" if desired
+
+### Eval during training (use a fraction of train for quick sanity check)
+val_size: 0.1
+per_device_eval_batch_size: 1
+eval_strategy: steps
+eval_steps: 50
+
+### Misc
+seed: 42
+dataloader_num_workers: 2

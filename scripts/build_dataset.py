@@ -11,11 +11,17 @@ Outputs:
   - data/dataset/test.jsonl
 
 Usage:
-  python3 scripts/build_dataset.py [--grid-dir data/w3_grid] [--min-count 3] [--tolerance 0.05]
+  python3 scripts/build_dataset.py [--grid-dir data/w3_grid] [--min-count 3]
 
 By default emits one record per (kernel, input, PC) — same binary PC across different
 inputs becomes separate samples. Use --merge-inputs to majority-vote merge across inputs
 (produces fewer but more confident labels).
+
+Label format follows PF-LLM paper Listing 1:
+  {"PF Sel": "sandbox", "PF Degree": 1, "Filter": "ip_stride"}
+  - PF Sel: argmin AMAT prefetcher (always populated)
+  - PF Degree: degree of that best config (always populated)
+  - Filter: worst simple prefetcher name, or "none"
 """
 
 import argparse
@@ -38,6 +44,10 @@ CONFIGS = [
     "sandbox_d1", "sandbox_d2", "sandbox_d3",
 ]
 PREFETCHER_CONFIGS = CONFIGS[1:]  # exclude "no"
+
+# Paper §4.1: "filtering hint is omitted if the worst-performing prefetcher
+# is one of the designated advanced components"
+ADVANCED_PREFETCHERS = {"sms", "sandbox"}
 
 TRAIN_KERNELS = {"bfs", "pr", "bc", "cc"}
 TEST_KERNELS = {"sssp", "tc"}
@@ -78,17 +88,21 @@ def is_binary_pc(pc_hex: str) -> bool:
     return 0 < offset < 0x100000
 
 
-def decide_label(amat_by_config: dict[str, float], tolerance: float
-                 ) -> dict:
-    """Decide (PF_Sel, PF_Degree, Filter) from per-config AMAT values.
+def decide_label(amat_by_config: dict[str, float]) -> dict:
+    """Decide (PF Sel, PF Degree, Filter) following PF-LLM paper §4.1.
 
-    Returns dict with keys: filter, pf_sel, pf_degree, amat_no, amat_best, best_config.
+    - PF Sel = prefetcher with lowest (best) AMAT
+    - PF Degree = degree of that best config
+    - Filter = prefetcher TYPE with highest (worst) best-case AMAT among simple
+      prefetchers; "none" if worst is an advanced component or doesn't hurt
+
+    Returns dict or None if insufficient data.
     """
     amat_no = amat_by_config.get("no")
     if amat_no is None:
         return None
 
-    # Find best prefetcher config
+    # Find best prefetcher config (argmin AMAT)
     best_config = None
     best_amat = float("inf")
     for config in PREFETCHER_CONFIGS:
@@ -101,37 +115,48 @@ def decide_label(amat_by_config: dict[str, float], tolerance: float
     if best_config is None:
         return None
 
-    # Filter decision: is the best prefetcher meaningfully better than no-prefetch?
-    improvement = (amat_no - best_amat) / amat_no if amat_no > 0 else 0
+    pf_sel, pf_degree = parse_config(best_config)
 
-    if improvement > tolerance:
-        pf_sel, pf_degree = parse_config(best_config)
-        return {
-            "filter": False,
-            "pf_sel": pf_sel,
-            "pf_degree": pf_degree,
-            "amat_no": round(amat_no, 2),
-            "amat_best": round(best_amat, 2),
-            "best_config": best_config,
-        }
+    # Find worst prefetcher TYPE: for each type, take its best (min) AMAT
+    # across degree variants, then find the type with the highest best-AMAT
+    per_type_best = {}  # prefetcher_name -> min AMAT across its degrees
+    for config in PREFETCHER_CONFIGS:
+        if config in amat_by_config:
+            pf_name, _ = parse_config(config)
+            a = amat_by_config[config]
+            if pf_name not in per_type_best or a < per_type_best[pf_name]:
+                per_type_best[pf_name] = a
+
+    # Worst type = argmax of per-type best AMAT
+    worst_type = max(per_type_best, key=lambda k: per_type_best[k])
+
+    # Filter decision per paper rules
+    if worst_type in ADVANCED_PREFETCHERS:
+        filter_pf = "none"
+    elif worst_type == pf_sel:
+        # The worst is also the best → all prefetchers are similar, no filter
+        filter_pf = "none"
     else:
-        return {
-            "filter": True,
-            "pf_sel": None,
-            "pf_degree": None,
-            "amat_no": round(amat_no, 2),
-            "amat_best": round(best_amat, 2),
-            "best_config": best_config,
-        }
+        filter_pf = worst_type
+
+    return {
+        "pf_sel": pf_sel,
+        "pf_degree": pf_degree,
+        "filter_pf": filter_pf,
+        "amat_no": round(amat_no, 2),
+        "amat_best": round(best_amat, 2),
+        "best_config": best_config,
+        "worst_type": worst_type,
+    }
 
 
 def majority_label(labels: list[dict]) -> dict:
     """Given labels from multiple (kernel, input) traces for the same (kernel, PC),
     pick the majority label. For ties, pick the one with lowest amat_best."""
-    # Group by (filter, pf_sel, pf_degree) tuple
+    # Group by (pf_sel, pf_degree, filter_pf) tuple
     groups = defaultdict(list)
     for lb in labels:
-        key = (lb["filter"], lb["pf_sel"], lb["pf_degree"])
+        key = (lb["pf_sel"], lb["pf_degree"], lb["filter_pf"])
         groups[key].append(lb)
 
     # Pick the group with most votes; break ties by lowest avg amat_best
@@ -145,12 +170,13 @@ def majority_label(labels: list[dict]) -> dict:
     avg_amat_best = sum(lb["amat_best"] for lb in labels) / len(labels)
 
     return {
-        "filter": best_key[0],
-        "pf_sel": best_key[1],
-        "pf_degree": best_key[2],
+        "pf_sel": best_key[0],
+        "pf_degree": best_key[1],
+        "filter_pf": best_key[2],
         "amat_no": round(avg_amat_no, 2),
         "amat_best": round(avg_amat_best, 2),
         "best_config": winner_labels[0]["best_config"],
+        "worst_type": winner_labels[0]["worst_type"],
         "vote_count": len(winner_labels),
         "total_traces": len(labels),
     }
@@ -159,10 +185,8 @@ def majority_label(labels: list[dict]) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="Build PF-LLM dataset from W3 grid")
     parser.add_argument("--grid-dir", default="data/w3_grid", help="W3 grid JSON directory")
-    parser.add_argument("--min-count", type=int, default=10,
-                        help="Min fill count per PC to include (default: 10)")
-    parser.add_argument("--tolerance", type=float, default=0.05,
-                        help="Relative AMAT improvement threshold for Filter decision (default: 0.05)")
+    parser.add_argument("--min-count", type=int, default=3,
+                        help="Min fill count per PC to include (default: 3)")
     parser.add_argument("--context-lines", type=int, default=128,
                         help="Assembly context lines (default: 128)")
     parser.add_argument("--merge-inputs", action="store_true",
@@ -206,7 +230,7 @@ def main():
                     if pc_hex in amat_all[config]:
                         amat_by_config[config] = amat_all[config][pc_hex][0]
 
-                label = decide_label(amat_by_config, args.tolerance)
+                label = decide_label(amat_by_config)
                 if label is not None:
                     per_trace_labels[(kernel, inp, pc_hex)] = label
                     per_kernel_pc_labels[(kernel, pc_hex)].append(label)
@@ -301,14 +325,15 @@ def main():
             "pc_offset": asm_info["pc_offset"],
             "asm_context": asm_info["asm_context"],
             "label": {
-                "filter": label["filter"],
-                "pf_sel": label["pf_sel"],
-                "pf_degree": label["pf_degree"],
+                "PF Sel": label["pf_sel"],
+                "PF Degree": label["pf_degree"],
+                "Filter": label["filter_pf"],
             },
             "_aux": {
                 "amat_no": label["amat_no"],
                 "amat_best": label["amat_best"],
                 "best_config": label["best_config"],
+                "worst_type": label["worst_type"],
                 "vote_count": label["vote_count"],
                 "total_traces": label["total_traces"],
             },
@@ -356,20 +381,17 @@ def main():
             kernel_counts[r["binary"]] += 1
         print(f"  Per kernel: {dict(kernel_counts)}", file=sys.stderr)
 
-        # Filter distribution
-        n_filter = sum(1 for r in records if r["label"]["filter"])
-        print(f"  Filter=True: {n_filter}/{len(records)} "
-              f"({100*n_filter/len(records):.1f}%)", file=sys.stderr)
-
-        # PF selection distribution (non-filtered)
+        # PF Sel distribution
         pf_counts = defaultdict(int)
         degree_counts = defaultdict(int)
+        filter_counts = defaultdict(int)
         for r in records:
-            if not r["label"]["filter"]:
-                pf_counts[r["label"]["pf_sel"]] += 1
-                degree_counts[r["label"]["pf_degree"]] += 1
-        print(f"  PF selection: {dict(pf_counts)}", file=sys.stderr)
-        print(f"  PF degree: {dict(degree_counts)}", file=sys.stderr)
+            pf_counts[r["label"]["PF Sel"]] += 1
+            degree_counts[r["label"]["PF Degree"]] += 1
+            filter_counts[r["label"]["Filter"]] += 1
+        print(f"  PF Sel: {dict(pf_counts)}", file=sys.stderr)
+        print(f"  PF Degree: {dict(degree_counts)}", file=sys.stderr)
+        print(f"  Filter: {dict(filter_counts)}", file=sys.stderr)
 
         # AMAT stats
         amat_nos = [r["_aux"]["amat_no"] for r in records]
