@@ -34,8 +34,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from extract_asm_context import PIE_BASE, parse_objdump, build_offset_index, find_context
 
-KERNELS = ["bfs", "pr", "sssp", "bc", "cc", "tc"]
-INPUTS = ["kron18", "kron20", "urand18", "urand20"]
+DEFAULT_KERNELS = ["bfs", "pr", "sssp", "bc", "cc", "tc"]
+DEFAULT_INPUTS = ["kron18", "kron20", "urand18", "urand20"]
 CONFIGS = [
     "no",
     "ip_stride_d1", "ip_stride_d2", "ip_stride_d3",
@@ -53,6 +53,14 @@ TRAIN_KERNELS = {"bfs", "pr", "bc", "cc"}
 TEST_KERNELS = {"sssp", "tc"}
 
 BINARY_DIR = Path("vendor/gapbs")
+
+
+def parse_csv(value: str) -> list[str]:
+    """Parse a comma-separated argument into a non-empty list."""
+    items = [x.strip() for x in value.split(",") if x.strip()]
+    if not items:
+        raise argparse.ArgumentTypeError("expected at least one comma-separated value")
+    return items
 
 
 def parse_config(config: str) -> tuple[str, int]:
@@ -185,6 +193,18 @@ def majority_label(labels: list[dict]) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="Build PF-LLM dataset from W3 grid")
     parser.add_argument("--grid-dir", default="data/w3_grid", help="W3 grid JSON directory")
+    parser.add_argument("--kernels", type=parse_csv,
+                        default=DEFAULT_KERNELS,
+                        help="Comma-separated kernels (default: bfs,pr,sssp,bc,cc,tc)")
+    parser.add_argument("--inputs", type=parse_csv,
+                        default=DEFAULT_INPUTS,
+                        help="Comma-separated inputs (default: kron18,kron20,urand18,urand20)")
+    parser.add_argument("--train-kernels", type=parse_csv,
+                        default=sorted(TRAIN_KERNELS),
+                        help="Comma-separated train kernels")
+    parser.add_argument("--test-kernels", type=parse_csv,
+                        default=sorted(TEST_KERNELS),
+                        help="Comma-separated test kernels")
     parser.add_argument("--min-count", type=int, default=3,
                         help="Min fill count per PC to include (default: 3)")
     parser.add_argument("--context-lines", type=int, default=128,
@@ -198,6 +218,11 @@ def main():
     grid_dir = Path(args.grid_dir)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    train_kernels = set(args.train_kernels)
+    test_kernels = set(args.test_kernels)
+    unknown_split = [k for k in args.kernels if k not in train_kernels and k not in test_kernels]
+    if unknown_split:
+        parser.error(f"kernels missing from train/test split: {','.join(unknown_split)}")
 
     # ── Phase 1: Load all per-PC AMAT data ──────────────────────────────
     print("Phase 1: Loading per-PC AMAT from grid JSONs...", file=sys.stderr)
@@ -208,8 +233,8 @@ def main():
     per_kernel_pc_labels = defaultdict(list)
 
     total_loaded = 0
-    for kernel in KERNELS:
-        for inp in INPUTS:
+    for kernel in args.kernels:
+        for inp in args.inputs:
             # Load AMAT for all 13 configs for this (kernel, input)
             amat_all = {}  # config -> {pc_hex: (amat, count)}
             for config in CONFIGS:
@@ -274,7 +299,7 @@ def main():
 
     asm_cache = {}  # (kernel, pc_hex) -> {"pc_offset": ..., "asm_context": ...}
 
-    for kernel in KERNELS:
+    for kernel in args.kernels:
         binary_path = str(BINARY_DIR / kernel)
         pcs = pcs_by_kernel[kernel]
         if not pcs:
@@ -339,10 +364,12 @@ def main():
             },
         }
 
-        if kernel in TRAIN_KERNELS:
+        if kernel in train_kernels:
             train_records.append(record)
-        else:
+        elif kernel in test_kernels:
             test_records.append(record)
+        else:
+            raise AssertionError(f"kernel not assigned to train/test split: {kernel}")
 
     # Sort by (binary, input, pc_offset) for reproducibility
     sort_key = lambda r: (r["binary"], r["input"] or "", r["pc_offset"])
