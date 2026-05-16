@@ -4,7 +4,7 @@
 # Run with: llamafactory-cli train training/train_lora.yaml
 
 ### Model
-model_name_or_path: Qwen/Qwen2.5-Coder-0.5B-Instruct
+model_name_or_path: /root/autodl-tmp/models/Qwen2.5-Coder-0.5B-Instruct
 
 ### Method
 stage: sft

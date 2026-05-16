@@ -1,0 +1,3555 @@
+{
+  "metrics": {
+    "n_total": 221,
+    "n_parsed": 221,
+    "parse_rate": 1.0,
+    "pf_sel_acc": 0.3167,
+    "pf_degree_acc": 0.3937,
+    "filter_acc": 0.638,
+    "joint_acc": 0.1041,
+    "per_pf_sel": {
+      "sandbox": 0.6719,
+      "sms": 0.122,
+      "ip_stride": 0.1932,
+      "stream": 0.1786
+    }
+  },
+  "predictions": [
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555561bb0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555561bb8",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555557444",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"stream\"}",
+      "correct": true
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555557584",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x5555555575d4",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555557724",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559a28",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559b7a",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559b86",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559ba3",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559ba7",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559bc0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559bc7",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559bdf",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c8c",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c90",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c96",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559cc0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555caca",
+      "pred": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"stream\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cba7",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cbab",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cca0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cca7",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ccab",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdb6",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdba",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdbe",
+      "pred": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"stream\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ce43",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ce84",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 2,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ce93",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ceed",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cef2",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"ip_stride\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555d3ce",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555dad6",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555dc03",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555561bb0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555561bb8",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555557584",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559a21",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559b7a",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559b86",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559ba3",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559bc0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559bdf",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c8c",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c90",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c96",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555caca",
+      "pred": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"stream\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cba0",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cba7",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cbab",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cca0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cca7",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ccab",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdb6",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdba",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdbe",
+      "pred": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"stream\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ce43",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ce93",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555d3ce",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555dad6",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555dc03",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555561bb0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555561bb8",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555557444",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555557584",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x5555555575d4",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555557724",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559a21",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559b7a",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559b86",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559ba3",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559ba7",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559bc0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559bc7",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559bdf",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c8c",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c90",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c96",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559cc0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 2,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559d4f",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559d53",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555a2d1",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555caca",
+      "pred": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"stream\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cba0",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 2,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cba7",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cbab",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cbc8",
+      "pred": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"stream\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cbd4",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cca0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cca7",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ccab",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdb6",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdba",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdbe",
+      "pred": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"stream\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ce43",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 2,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ce93",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cec5",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ceed",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cef2",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"ip_stride\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555d3ce",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555dad6",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555dc03",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555561bb0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555561bb8",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555557444",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555557584",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x5555555575d4",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559a21",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559b7a",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559b86",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559ba3",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559ba7",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559bc0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559bdf",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c8c",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c90",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x555555559c96",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555a2d1",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555caca",
+      "pred": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"stream\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cba0",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cba7",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cbab",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cca0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cca7",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ccab",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdb6",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 2,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdba",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555cdbe",
+      "pred": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"stream\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ce43",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "stream"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"stream\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555ce93",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555d3ce",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555dad6",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "sssp",
+      "pc_runtime": "0x55555555dc03",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555654d7",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555654dc",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555654e5",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555565526",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555565548",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555565590",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555556559a",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555655a8",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555655c0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555655d4",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555655e5",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555655ef",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555657db",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555565800",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555565818",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555833e",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555583c0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555583e0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555583f9",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558400",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 2, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555963c",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559645",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555596fe",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559702",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555970a",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555bcae",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"ip_stride\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555c3b6",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fe70",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fe78",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555657db",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555833e",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555583e0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555583f9",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558400",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 2, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555595c8",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555963c",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559645",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555596fe",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559702",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555970a",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555bcae",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"ip_stride\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555c3b6",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fa42",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fa58",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fa5c",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fe70",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fe78",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555833e",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555583c0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558400",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 2, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558fde",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558fe3",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558ff0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"ip_stride\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558ffe",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559008",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"ip_stride\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555900f",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559018",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555963c",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559645",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555596fe",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559702",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555970a",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555bcae",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"ip_stride\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555c3b6",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fe70",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fe78",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555833e",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555583c0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558400",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 2,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 2, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558fde",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558fe3",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558ff0",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"ip_stride\"}",
+      "correct": true
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555558ffe",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559008",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"ip_stride\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555900f",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559018",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555595c8",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555963c",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559645",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x5555555596fe",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x555555559702",
+      "pred": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "stream",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"ip_stride\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555970a",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555bcae",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "ip_stride"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"ip_stride\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555c3b6",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 2,
+        "Filter": "stream"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fa58",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "ip_stride",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": false
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fe70",
+      "pred": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sandbox",
+        "PF Degree": 3,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sandbox\", \"PF Degree\": 3, \"Filter\": \"none\"}",
+      "correct": true
+    },
+    {
+      "binary": "tc",
+      "pc_runtime": "0x55555555fe78",
+      "pred": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "gt": {
+        "PF Sel": "sms",
+        "PF Degree": 1,
+        "Filter": "none"
+      },
+      "raw_response": "{\"PF Sel\": \"sms\", \"PF Degree\": 1, \"Filter\": \"none\"}",
+      "correct": true
+    }
+  ]
+}

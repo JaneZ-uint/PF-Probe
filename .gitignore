@@ -15,3 +15,5 @@ vendor/gapbs/
 
 # Pin tracer build artifacts
 champsim/tracer/pin/obj-intel64/
+
+output/
