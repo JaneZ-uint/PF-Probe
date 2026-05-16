@@ -1,7 +1,7 @@
 # W4 — 训练 Pipeline 搭建（CPU 端完成）
 
 > 起始：2026/05/15
-> 状态：CPU 端全部完成；等待 GPU 执行训练+评估
+> 状态：CPU 端 pipeline + AutoDL GPU 训练/评估完成
 > 目标：LLaMA-Factory + Qwen2.5-Coder-0.5B + LoRA 训练管道
 
 ---
@@ -172,11 +172,26 @@ jmp    954a <_ZNSt6vector...>
 | 文件 | 作用 |
 |---|---|
 | `training/requirements_gpu.txt` | pip 依赖（torch, transformers, peft, trl, etc.） |
-| `training/setup_gpu.sh` | 一键安装脚本（含 LLaMA-Factory 源码安装 + 模型下载） |
+| `training/setup_gpu.sh` | 一键安装脚本（含 LLaMA-Factory 源码安装 + 本地模型校验） |
+
+### AutoDL 实际环境修正
+
+AutoDL 实例无法直接访问 Hugging Face，因此改为本地下载 Qwen 模型后 `rsync` 到：
+
+```text
+/root/autodl-tmp/models/Qwen2.5-Coder-0.5B-Instruct
+```
+
+对应改动：
+- `training/setup_gpu.sh` 不再在线下载模型，改为读取 `PF_LLM_MODEL_PATH`，默认指向上述本地模型目录。
+- `training/train_lora.yaml` 的 `model_name_or_path` 改为本地绝对路径。
+- `training/evaluate.py` 的默认 `--base-model` 同步改为本地绝对路径。
+- PyTorch 2.8.0 的 CUDA 属性为 `total_memory`，脚本中已兼容 `total_memory` / `total_mem`。
+- LLaMA-Factory import `torchaudio` 时遇到 CUDA runtime mismatch，修复方式为安装匹配 `torch==2.8.0+cu128` 的 `torchaudio==2.8.0+cu128`。
 
 ---
 
-## GPU 到手后的三条命令
+## GPU 实际执行命令
 
 ```bash
 # 1. 环境安装（一次性）
@@ -187,10 +202,100 @@ llamafactory-cli train training/train_lora.yaml
 
 # 3. 评估
 python3 training/evaluate.py \
-    --adapter-path output/pf_llm_lora/checkpoint-500 \
+    --adapter-path output/pf_llm_lora/checkpoint-540 \
     --dataset data/dataset/test.jsonl \
     --output results/eval.json
 ```
+
+---
+
+## W4f — GPU 训练结果
+
+### 训练配置回顾
+
+实际训练使用：
+- Base model: `/root/autodl-tmp/models/Qwen2.5-Coder-0.5B-Instruct`
+- LoRA rank/alpha: 16 / 32
+- Epochs: 20
+- Train samples: 235
+- Eval split: 10% train split sanity check
+- Final checkpoint: `output/pf_llm_lora/checkpoint-540`
+
+### LLaMA-Factory 训练日志
+
+| 指标 | 值 |
+|---|---:|
+| Global step | 540 |
+| Train runtime | 1313.47 s (~21.9 min) |
+| Train samples/s | 3.213 |
+| Train loss | 0.1893 |
+| Final eval_loss | 0.1414 |
+
+训练 loss 在后期降到约 0.01，说明模型基本拟合了训练集/训练内 validation split。但这不能直接代表 held-out test 上的 prefetch 选择泛化能力。
+
+---
+
+## W4g — Held-out Test 评估
+
+评估文件：
+
+```text
+results/eval.json
+```
+
+测试集共 221 条，评估脚本成功解析全部输出：
+
+| 指标 | 值 |
+|---|---:|
+| n_total | 221 |
+| n_parsed | 221 |
+| parse_rate | 1.0000 |
+| PF Sel acc | 0.3167 |
+| PF Degree acc | 0.3937 |
+| Filter acc | 0.6380 |
+| Joint acc | 0.1041 |
+
+### 按 PF Sel 类别的准确率
+
+| GT PF Sel | 准确率 |
+|---|---:|
+| sandbox | 0.6719 |
+| sms | 0.1220 |
+| ip_stride | 0.1932 |
+| stream | 0.1786 |
+
+### 与 majority baseline 对比
+
+单字段 majority baseline（永远预测测试集最多的类别）：
+
+| 字段 | Test majority | Baseline acc | LoRA acc |
+|---|---|---:|---:|
+| PF Sel | ip_stride (88/221) | 0.3982 | 0.3167 |
+| PF Degree | 1 (103/221) | 0.4661 | 0.3937 |
+| Filter | none (158/221) | 0.7149 | 0.6380 |
+
+Joint majority baseline 为永远预测 `("ip_stride", 1, "none")`，准确率 0.2489；当前 LoRA joint accuracy 为 0.1041（23/221）。
+
+### 预测分布诊断
+
+| 字段 | GT 分布 | Pred 分布 |
+|---|---|---|
+| PF Sel | ip_stride 88, sandbox 64, sms 41, stream 28 | sandbox 134, ip_stride 63, sms 15, stream 9 |
+| PF Degree | d1 103, d3 64, d2 54 | d1 158, d3 59, d2 4 |
+| Filter | none 158, ip_stride 33, stream 30 | none 190, stream 21, ip_stride 10 |
+
+模型的 JSON 格式学习得很好，但决策明显偏向 `sandbox`、degree 1 和 `Filter=none`。这说明 W4 管道已打通，但当前数据规模和拆分设置不足以得到可靠的 prefetch 决策模型。
+
+### 结论
+
+W4 的主要目标（训练 pipeline、GPU 环境、LoRA checkpoint、评估闭环）已经完成。当前模型不能作为有效 predictor 使用，原因不是输出格式问题，而是泛化质量不足：
+
+1. 训练集只有 235 条，且 test 是 held-out PC 样本，覆盖不足。
+2. Label 噪声可能较高：AMAT 最优 prefetcher/degree 在小差距下容易不稳定。
+3. 当前只用单次 LoRA 训练，没有 baseline model、majority predictor、按 binary 分组拆分等对照。
+4. 20 epoch 训练 loss 很低但 test joint acc 低，存在过拟合信号。
+
+下一步应进入 P1：扩数据，并同时建立 stronger baseline/诊断评估。
 
 ---
 
@@ -213,7 +318,9 @@ python3 training/evaluate.py \
 
 ## 待办
 
-- [ ] 落实 GPU 资源（学校远程 / Colab / AutoDL）
-- [ ] 在 GPU 上运行 `setup_gpu.sh`
-- [ ] 执行训练 + 评估
-- [ ] 根据结果决定是否需要 P1（libc objdump 扩数据）
+- [x] 落实 GPU 资源（AutoDL RTX 4090）
+- [x] 在 GPU 上运行 `setup_gpu.sh`
+- [x] 执行训练 + 评估
+- [x] 根据结果决定是否需要 P1（需要：扩数据 + baseline/诊断）
+- [ ] P1：引入更多二进制 / libc objdump / 更多 traces，扩大 train/test 覆盖
+- [ ] P1：补 majority baseline、base model zero-shot、按 binary 分组指标
