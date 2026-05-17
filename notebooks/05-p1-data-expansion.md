@@ -282,6 +282,64 @@ P1 第一轮补数据达成目标：样本数从 456 增至 1194，且输入 sca
 
 ---
 
+## P1f — Expanded Dataset LoRA 训练结果
+
+### 训练设置
+
+P1 使用 expanded dataset 重新训练 LoRA：
+
+| 项 | 值 |
+|---|---|
+| Base model | Qwen2.5-Coder-0.5B-Instruct |
+| Train records | 686 |
+| Test records | 508 |
+| Epochs | 10 |
+| Output | `output/pf_llm_lora_p1` |
+| Eval output | `results/eval_p1.json` |
+
+### Held-out Test 结果
+
+| 指标 | P1 LoRA | Majority baseline | 结论 |
+|---|---:|---:|---|
+| parse_rate | 1.0000 | - | JSON 格式稳定 |
+| PF Sel acc | 0.2894 | 0.3760 | 低于 baseline |
+| PF Degree acc | 0.3957 | 0.4705 | 低于 baseline |
+| Filter acc | 0.5472 | 0.6890 | 低于 baseline |
+| Joint acc | 0.1260 | 0.2402 | 低于 baseline |
+
+按 GT `PF Sel` 分解：
+
+| GT PF Sel | Accuracy |
+|---|---:|
+| ip_stride | 0.4869 |
+| sandbox | 0.2582 |
+| stream | 0.0938 |
+| sms | 0.0141 |
+
+### 与 W4 对比
+
+| 指标 | W4 LoRA | P1 LoRA |
+|---|---:|---:|
+| Test records | 221 | 508 |
+| parse_rate | 1.0000 | 1.0000 |
+| PF Sel acc | 0.3167 | 0.2894 |
+| PF Degree acc | 0.3937 | 0.3957 |
+| Filter acc | 0.6380 | 0.5472 |
+| Joint acc | 0.1041 | 0.1260 |
+
+P1 的 joint accuracy 小幅上升，但仍显著低于 majority baseline；`Filter` 和 `PF Sel` 没有从扩数据中受益。
+
+### 结论
+
+P1 证明了单纯增加同一批 GAP kernels 的 input scale 不足以解决问题。模型持续能学会输出格式，但不能稳定泛化 prefetch 决策。下一步应从数据噪声和 split 设计切入：
+
+1. **merge-inputs**：同一 `(kernel, PC)` 在多个输入上的 label 做投票，减少输入扰动造成的 label 抖动。
+2. **label margin**：只保留 best AMAT 明显优于 second-best 的样本，过滤不可判定/低置信 label。
+3. **分组诊断**：按 kernel/input/PF Sel/margin 分解错误，确认失败来自 split 泛化还是 label 本身不稳定。
+4. **zero-shot baseline**：评估 base model 未训练时是否已有偏置，作为 LoRA 学习增益的对照。
+
+---
+
 ## 下一步
 
 - [x] 参数化 P1 数据脚本
@@ -290,6 +348,7 @@ P1 第一轮补数据达成目标：样本数从 456 增至 1194，且输入 sca
 - [x] 跑新增 312 个 ChampSim JSON
 - [x] 重建 expanded dataset + ShareGPT
 - [x] 补 majority baseline 统计
+- [x] 用 expanded dataset 重新训练 LoRA
 - [ ] 补 base model zero-shot / LoRA 对比评估
 - [ ] 按 binary、input、label margin 做诊断
-- [ ] 用 expanded dataset 重新训练 LoRA
+- [ ] 构建 merge-inputs / label-margin 降噪数据集
